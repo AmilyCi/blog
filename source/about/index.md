@@ -1,6 +1,11 @@
 ---
-title: about
+title:  About Me
 date: 2020-04-13 22:36:43
 ---
-#### 关于我
-我叫XXX
+> A Coder, live in Beijing, China.
+
+姓名：CiXin
+现居：北京
+GitHub：[AmilyCi](https://github.com/AmilyCi)
+邮箱：cixinii@163.com
+
