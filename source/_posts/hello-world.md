@@ -33,7 +33,7 @@ router.get('/get/jsonp', (ctx, next) => {
 })
 ```
 页面显示
-![](result.png)
+![](./hello-world/result.png)
 - 优点
     - JSONP 使用简单且兼容性不错
 - 缺点
