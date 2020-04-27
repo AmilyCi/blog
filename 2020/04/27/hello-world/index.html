@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    第一篇文章 |  前端小白菜
+    前端跨域解决方案 |  前端小白菜
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -46,7 +46,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  第一篇文章
+  前端跨域解决方案
 </h1>
  
 
@@ -55,8 +55,8 @@
 
     
     <div class="article-meta">
-      <a href="/blog/2020/04/13/hello-world/" class="article-date">
-  <time datetime="2020-04-13T06:26:33.664Z" itemprop="datePublished">2020-04-13</time>
+      <a href="/blog/2020/04/27/hello-world/" class="article-date">
+  <time datetime="2020-04-27T09:48:40.496Z" itemprop="datePublished">2020-04-27</time>
 </a>
       
       
@@ -66,7 +66,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">38</span>
+            <span class="post-count">359</span>
         </span>
     </span>
 
@@ -100,10 +100,22 @@
       
 
       
-      <p>欢迎来到我的博客</p>
-<h2 id="这是一个标题"><a href="#这是一个标题" class="headerlink" title="这是一个标题"></a>这是一个标题</h2><h3 id="这也是一个标题"><a href="#这也是一个标题" class="headerlink" title="这也是一个标题"></a>这也是一个标题</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这里可以写代码</span><br></pre></td></tr></table></figure>
-
-<p>这里可以创建连接: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
+<h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
+<li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+服务端<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
+页面显示<br><img src="/blog/.io//result.png" alt></li>
+<li>优点<ul>
+<li>JSONP 使用简单且兼容性不错</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>只限于 get 请求</li>
+<li>它只支持跨域HTTP这种情况</li>
+<li>jsonp在调用失败的时候，不会返回各种HTTP状态码</li>
+</ul>
+</li>
+</ul>
 
       
       <!-- reward -->
@@ -172,7 +184,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/04/13/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/04/27/hello-world/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -188,15 +200,11 @@
   
   <nav class="article-nav">
     
-      <a href="/blog/2020/04/13/about-css/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            about-css
-          
-        </div>
-      </a>
     
+      <a href="/blog/2020/04/13/about-css/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">about-css</div>
+      </a>
     
   </nav>
 
@@ -427,6 +435,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
 <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
 
+
+
 <script src="/blog/dist/main.js"></script>
 
 
@@ -612,23 +622,6 @@
 
 
 
-    
-    <div id="music">
-    
-    
-    
-    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
-        src="//music.163.com/outchain/player?type=2&id=22707008&auto=1&height=32"></iframe>
-</div>
-
-<style>
-    #music {
-        position: fixed;
-        right: 15px;
-        bottom: 0;
-        z-index: 998;
-    }
-</style>
     
   </div>
 </body>
