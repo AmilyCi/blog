@@ -13,7 +13,7 @@ title: 前端跨域解决方案
         console.log(data)
     }
 </script>
-<script type="text/javascript" src="http://127.0.0.1:8888/get/jsonp"></script>
+<script type="text/javascript" src="http://127.0.0.1:8888/get/jsonp?callback=jsonp"></script>
 ```
 服务端
 ```js
@@ -37,6 +37,25 @@ router.get('/get/jsonp', (ctx, next) => {
 - 优点
     - JSONP 使用简单且兼容性不错
 - 缺点
-    - 只限于 get 请求
+    - 只限于 get 请求（即只读）
     - 它只支持跨域HTTP这种情况
-    - jsonp在调用失败的时候，不会返回各种HTTP状态码
+    - jsonp在调用失败的时候，不会返回各种HTTP状态码（jsonp的错误处理机制并不完善，我们没办法进行错误处理）
+    - 需要客户端和服务端定制进行开发，服务端返回的数据不是标准的json数据，而是callback包裹的数据
+    - JSONP只会发一次请求
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发中可能会遇到多个JSONP请求的回调函数名是相同的，这时候就需要自己封装一个JSONP，下面是实现的代码
+```js
+function jsonp(url, jsonpCallback, success) {
+    let script = document.createElement('script')
+    script.src = url
+    script.async = true
+    script.type = 'text/javascript'
+    window[jsonpCallback] = function(data) {
+        success && success(data)
+    }
+    document.body.appendChild(script)
+}
+jsonp('http://127.0.0.1:8888/get/jsonp', 'callback', function(value) {
+    console.log(value)
+})
+```
