@@ -13,12 +13,12 @@
   </entry>
   <entry>
     <title>前端跨域解决方案</title>
-    <url>/blog/2020/04/28/hello-world/</url>
+    <url>/blog/2020/05/07/hello-world/</url>
     <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
 <h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
 <li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 服务端<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
-页面显示<img src="/blog/2020/04/28/hello-world/result.png" class=""></li>
+页面显示<img src="/blog/2020/05/07/hello-world/result.png" class=""></li>
 <li>优点<ul>
 <li>JSONP 使用简单且兼容性不错</li>
 </ul>
@@ -33,6 +33,27 @@
 </li>
 </ul>
 <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发中可能会遇到多个JSONP请求的回调函数名是相同的，这时候就需要自己封装一个JSONP，下面是实现的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, jsonpCallback, success</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'script'</span>)<br>    script.src = url<br>    script.async = <span class="hljs-literal">true</span><br>    script.type = <span class="hljs-string">'text/javascript'</span><br>    <span class="hljs-built_in">window</span>[jsonpCallback] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>&#123;<br>        success &amp;&amp; success(data)<br>    &#125;<br>    <span class="hljs-built_in">document</span>.body.appendChild(script)<br>&#125;<br>jsonp(<span class="hljs-string">'http://127.0.0.1:8888/get/jsonp'</span>, <span class="hljs-string">'callback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(value)<br>&#125;)<br></code></pre></td></tr></table></figure>]]></content>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, jsonpCallback, success</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'script'</span>)<br>    script.src = url<br>    script.async = <span class="hljs-literal">true</span><br>    script.type = <span class="hljs-string">'text/javascript'</span><br>    <span class="hljs-built_in">window</span>[jsonpCallback] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>&#123;<br>        success &amp;&amp; success(data)<br>    &#125;<br>    <span class="hljs-built_in">document</span>.body.appendChild(script)<br>&#125;<br>jsonp(<span class="hljs-string">'http://127.0.0.1:8888/get/jsonp'</span>, <span class="hljs-string">'callback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(value)<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、CORS"><a href="#2、CORS" class="headerlink" title="2、CORS"></a>2、CORS</h3><ul>
+<li>原理：服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。</li>
+</ul>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;虽然设置 CORS和前端没什么关系，但是通过这种方式解决跨域问题的话，会在发送请求时出现两种情况，分别为简单请求和复杂请求</p>
+<h4 id="简单请求"><a href="#简单请求" class="headerlink" title="简单请求"></a>简单请求</h4><p>1、使用下列方法之一：</p>
+<ul>
+<li>GET</li>
+<li>HEAD</li>
+<li>POST</li>
+</ul>
+<p>2、HTTP头信息不超出以下几种字段：</p>
+<ul>
+<li>Accept</li>
+<li>Accept-Language</li>
+<li>Content-Language</li>
+<li>Last-Event-ID</li>
+<li>Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain</li>
+</ul>
+<h4 id="复杂请求"><a href="#复杂请求" class="headerlink" title="复杂请求"></a>复杂请求</h4><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据</p>
+<h3 id="3、document-domain"><a href="#3、document-domain" class="headerlink" title="3、document.domain"></a>3、document.domain</h3>]]></content>
   </entry>
 </search>
