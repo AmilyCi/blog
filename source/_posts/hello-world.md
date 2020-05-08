@@ -78,6 +78,33 @@ jsonp('http://127.0.0.1:8888/get/jsonp', 'callback', function(value) {
 - Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain
 
 #### 复杂请求
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。
+- 优点：
+  - CORS支持所有的浏览器请求类型，承载的请求数据量更大，开放更简洁，服务端只需要将处理后的数据直接返回，不需要再特殊处理。
+  - CORS可以通过onerror事件监听错误，并且浏览器控制台会看到报错信息，利于排查。
 
 ### 3、document.domain
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;该方法只能用于主域名相同的情况下,比如```a.test.com``` 和 ```b.test.com```,只需要给页面添加```document.domain = 'test.com'```就可以实现跨域。
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;比如我们可以打开 [id.qq.com](https://id.qq.com/login/ptlogin.html)，调出控制台，输入```let w = window.open('http://www.qq.com')```，之后访问```w.document```，发现控制台会报出跨域相关的错误。这时我们再在控制台中输入```document.domain = 'qq.com'```，再访问```w.document```，这样就可以了。
+![](./hello-world/jt.png)
+- 注意：两个域名的主域名必须相同，并且所有的协议、端口都要一致，否则无法利用document.domain进行跨域。
+
+### 4、postMessage
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这种方式一般会用在iframe嵌入其他页面时需要通信的情况下，只要正确的使用，这种方法很安全。
+```xml
+<iframe id="iframe" src="http://test.com"></iframe>
+```
+```js
+// 发送端
+const iframe = document.getElementById('iframe);
+iframe.contentWindow.postMessage('{"method":"closeWindows"}', "http://test.com")
+```
+```js
+//接收端
+window.addEventListener("message", function(e){
+  console.log(e.data)
+}, false)
+```
+- 注意：
+  - 当使用postMessage将数据发送到其他窗口时，始终指定精确的目标origin，而不是*。 恶意网站可以在您不知情的情况下更改窗口的位置，因此它可以拦截使用postMessage发送的数据。
+  - 如果不希望从其他网站接收message，不要为message事件添加任何事件侦听器，这是一个完全万无一失的方式来避免安全问题。
