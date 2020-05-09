@@ -1,0 +1,44 @@
+---
+title: 常见的算法题
+date: 2020-05-09 15:35:28
+categories:
+- 前端技术
+tags:
+- 算法
+---
+### 1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。</br>任务是：找出所有项的和最大的 arr 数组的连续子数组。</br>写出函数 getMaxSubSum(arr)，用其找出并返回最大和。</br>例如：
+```js
+getMaxSubSum([-1, 2, 3, -9]) == 5
+getMaxSubSum([2, -1, 2, 3, -9]) == 6
+getMaxSubSum([-1, 2, 3, -9, 11]) == 11
+getMaxSubSum([-2, -1, 1, 2]) == 3
+getMaxSubSum([100, -9, 2, -3, 5]) == 100
+getMaxSubSum([1, 2, 3]) == 6
+```
+- 方案一：需要循环两次
+```js
+function getMaxSubSum(arr) {
+  let maxSum = 0;
+  for (let i = 0; i < arr.length; i++ ){
+    let partSum = 0;
+    for (let j = i; j < arr.length; j++){
+      partSum += arr[j]
+      maxSum = Math.max(maxSum, partSum)
+    }
+  }
+  return maxSum
+}
+```
+- 方案二：只需要循环一次，最优解
+```js
+function getMaxSubSum(arr) {
+  let maxSum = 0;
+  let partSum = 0;
+  for (let item of arr){
+    partSum += item
+    maxSum = Math.max(maxSum, partSum)
+    if (partSum < 0) partSum = 0
+  }
+  return maxSum
+}
+```
