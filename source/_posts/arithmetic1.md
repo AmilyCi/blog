@@ -42,3 +42,21 @@ function getMaxSubSum(arr) {
   return maxSum
 }
 ```
+
+### 2、数组去重
+```js
+let arr = ["Hare", "Krishna", "Hare", "Krishna","Krishna", "Krishna", "Hare", "Hare", ":-O", 3, 11, 20, 11, 0, 3]
+unique(arr) // ["Hare", "Krishna", ":-O", 3, 11, 20, 0]
+```
+- 方案一：(因为for循环对数组的每一项都进行了校验，所以仅适用于小型数组)
+```js
+function unique(arr) {
+  let result = []
+  for (let item of arr) {
+    if(!result.includes(item)){
+      result.push(item)
+    }
+  }
+  return result
+}
+```
