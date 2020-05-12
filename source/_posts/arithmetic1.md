@@ -60,3 +60,9 @@ function unique(arr) {
   return result
 }
 ```
+- 方案二：
+```js
+function unique(arr) {
+  return Array.form(new Set(arr))
+}
+```
