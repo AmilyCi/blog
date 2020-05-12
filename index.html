@@ -72,6 +72,89 @@
     
     
     
+    <article id="post-arithmetic1" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/blog/2020/05/09/arithmetic1/"
+    >常见的算法题</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/05/09/arithmetic1/" class="article-date">
+  <time datetime="2020-05-09T07:35:28.000Z" itemprop="datePublished">2020-05-09</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF/">前端技术</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如："><a href="#1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如：" class="headerlink" title="1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。任务是：找出所有项的和最大的 arr 数组的连续子数组。写出函数 getMaxSubSum(arr)，用其找出并返回最大和。例如："></a>1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。</br>任务是：找出所有项的和最大的 arr 数组的连续子数组。</br>写出函数 getMaxSubSum(arr)，用其找出并返回最大和。</br>例如：</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js">getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">5</span><br>getMaxSubSum([<span class="hljs-number">2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">6</span><br>getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">11</span>]) == <span class="hljs-number">11</span><br>getMaxSubSum([<span class="hljs-number">-2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]) == <span class="hljs-number">3</span><br>getMaxSubSum([<span class="hljs-number">100</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">2</span>, <span class="hljs-number">-3</span>, <span class="hljs-number">5</span>]) == <span class="hljs-number">100</span><br>getMaxSubSum([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]) == <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>方案一：需要循环两次<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; arr.length; i++ )&#123;<br>    <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = i; j &lt; arr.length; j++)&#123;<br>      partSum += arr[j]<br>      maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li>方案二：只需要循环一次，最优解<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> arr)&#123;<br>    partSum += item<br>    maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    <span class="hljs-keyword">if</span> (partSum &lt; <span class="hljs-number">0</span>) partSum = <span class="hljs-number">0</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="2、数组去重"><a href="#2、数组去重" class="headerlink" title="2、数组去重"></a>2、数组去重</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> arr = [<span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Krishna"</span>,<span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">":-O"</span>, <span class="hljs-number">3</span>, <span class="hljs-number">11</span>, <span class="hljs-number">20</span>, <span class="hljs-number">11</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>]<br>unique(arr) <span class="hljs-comment">// ["Hare", "Krishna", ":-O", 3, 11, 20, 0]</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>方案一：(因为for循环对数组的每一项都进行了校验，所以仅适用于小型数组)<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">unique</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> result = []<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> arr) &#123;<br>    <span class="hljs-keyword">if</span>(!result.includes(item))&#123;<br>      result.push(item)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+</article>
+    
     <article id="post-hello-world" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -80,7 +163,7 @@
     <header class="article-header">
        
 <h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/09/hello-world/"
+  <a class="article-title" href="/blog/2020/05/08/hello-world/"
     >前端跨域解决方案</a> 
 </h2>
  
@@ -90,8 +173,8 @@
 
     
     <div class="article-meta">
-      <a href="/blog/2020/05/09/hello-world/" class="article-date">
-  <time datetime="2020-05-09T08:43:52.711Z" itemprop="datePublished">2020-05-09</time>
+      <a href="/blog/2020/05/08/hello-world/" class="article-date">
+  <time datetime="2020-05-08T07:32:27.855Z" itemprop="datePublished">2020-05-08</time>
 </a>
       
   <div class="article-category">
@@ -116,7 +199,7 @@
 <h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
 <li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 服务端<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
-页面显示<img src="/blog/2020/05/09/hello-world/result.png" class=""></li>
+页面显示<img src="/blog/2020/05/08/hello-world/result.png" class=""></li>
 <li>优点<ul>
 <li>JSONP 使用简单且兼容性不错</li>
 </ul>
@@ -187,82 +270,6 @@
     <footer class="article-footer">
       
       
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-  
-  
-
-</article>
-    
-    <article id="post-arithmetic1" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/09/arithmetic1/"
-    >常见的算法题</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/blog/2020/05/09/arithmetic1/" class="article-date">
-  <time datetime="2020-05-09T07:35:28.000Z" itemprop="datePublished">2020-05-09</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF/">前端技术</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h3 id="1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如："><a href="#1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如：" class="headerlink" title="1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。任务是：找出所有项的和最大的 arr 数组的连续子数组。写出函数 getMaxSubSum(arr)，用其找出并返回最大和。例如："></a>1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。</br>任务是：找出所有项的和最大的 arr 数组的连续子数组。</br>写出函数 getMaxSubSum(arr)，用其找出并返回最大和。</br>例如：</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js">getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">5</span><br>getMaxSubSum([<span class="hljs-number">2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">6</span><br>getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">11</span>]) == <span class="hljs-number">11</span><br>getMaxSubSum([<span class="hljs-number">-2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]) == <span class="hljs-number">3</span><br>getMaxSubSum([<span class="hljs-number">100</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">2</span>, <span class="hljs-number">-3</span>, <span class="hljs-number">5</span>]) == <span class="hljs-number">100</span><br>getMaxSubSum([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]) == <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
-<ul>
-<li>方案一：需要循环两次<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; arr.length; i++ )&#123;<br>    <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = i; j &lt; arr.length; j++)&#123;<br>      partSum += arr[j]<br>      maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure></li>
-<li>方案二：只需要循环一次，最优解<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> arr)&#123;<br>    partSum += item<br>    maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    <span class="hljs-keyword">if</span> (partSum &lt; <span class="hljs-number">0</span>) partSum = <span class="hljs-number">0</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure></li>
-</ul>
-
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
-
 
     </footer>
 
