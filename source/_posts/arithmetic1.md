@@ -66,3 +66,27 @@ function unique(arr) {
   return Array.form(new Set(arr))
 }
 ```
+
+### 3、实现一个函数,可以计算出x的n次方
+- 方案一：
+```js
+function pow(x, n) {
+  let result = 1
+  for (let i = 0; i < n; i++){
+    result *= x
+  }
+  return result
+}
+pow(2, 3) //8
+```
+- 方案二：
+```js
+function pow(x, n) {
+  if(n == 1){
+    return x
+  }else{
+    return x * pow(x, n - 1)
+  }
+}
+pow(2, 3) //8
+```
