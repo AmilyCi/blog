@@ -151,4 +151,16 @@ webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><
         <tag>webpack</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Webpack基础入门02</title>
+    <url>/blog/2020/05/19/webpack02/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack可以配置两种环境模式，即：<code>开发环境</code>和<code>生产环境</code>。开发环境是 能让代码本地调试运行的环境，生产环境是 能让代码优化上线运行的环境。我们写的源代码里面包含了 es6 语法, less 文件要经过webpack进行编译处理,比如将 less 文件编译成 css 文件，把 es6 语法编译成浏览器能够识别的语法，然后输出的 bundle 这个资源文件就可以被浏览器运行了，为了让开发者更轻松，这里还添加了一些自动化工作，比如自动打开浏览器，自动刷新，自动编译等等一些咧操作，让我们的效率更高，这就是开发环境所做的事情。我们的样式在之前处理是整合到js中的，如果让样式在 js 中，会让 js 体积变得很大，下载的很慢，同时，这里会先加载js，再通过创建<code>&lt;style&gt;</code>标签，会出现闪屏的现象，所以我们要将css从js文件中提取出来，还有代码压缩，兼容性处理都可以让带吗更快，性能更好，能够平稳的运行，这样我们要做的事情会很多，如果把这些都放在开发环境下，那开发环境要做的事情就太多了，打包速度就会很慢，不利于我们开发，所以这些事情我们要放在生产环境上去做。</p>
+]]></content>
+      <categories>
+        <category>前端构建工具</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
 </search>
