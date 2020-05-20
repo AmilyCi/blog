@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>about-css</title>
-    <url>/blog/2020/04/13/about-css/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>前端技术</category>
-      </categories>
-      <tags>
-        <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>前端跨域解决方案</title>
     <url>/blog/2020/05/08/hello-world/</url>
     <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
@@ -149,6 +138,26 @@ webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><
       </categories>
       <tags>
         <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>http和https</title>
+    <url>/blog/2020/05/20/http/</url>
+    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 协议的全称为<code>超文本传输协议</code>。http 是以明文的方式发送内容，不提供任何方式的数据加密，因此 http 不适合传输敏感信息。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 默认工作在TCP协议 80 端口。</p>
+<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 协议的全称为<code>超文本传输安全协议</code>。它是为了解决 http 传输不安全而诞生的。https 在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 默认工作在 TCP 协议 443 端口。</p>
+<h3 id="https与http的区别"><a href="#https与http的区别" class="headerlink" title="https与http的区别"></a>https与http的区别</h3><ul>
+<li>http 是明文传输，数据都是未加密的，安全性较差，https 数据传输的过程是加密的，安全性好。</li>
+<li>https 协议需要到CA申请证书，免费的证书比较少，所以需要一定的费用</li>
+<li>http 页面响应速度比 https 快，因为 http 使用 TCP 三次握手建立连接，客户端和服务器需要交换3个包，https 除了 TCP 的三个包，还需要加上ssl握手需要的9个包，一共是12个包。</li>
+<li>https 和 http 使用的是完全不同的连接方式，用的端口也不一样，http 用的是 80 端口，https 用的是 443 端口。</li>
+<li>https 其实就是建构在 SSL/TLS 之上的 http 协议，所以 https 比 http 要更耗费服务器资源。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>网络基础</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
       </tags>
   </entry>
   <entry>
