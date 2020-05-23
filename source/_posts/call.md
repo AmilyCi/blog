@@ -1,7 +1,9 @@
 ---
 title: call、apply、bind
 date: 2020-05-23 14:31:09
-tags:
+tags: JS
+categories:
+- JS基础
 ---
 ### 三者之间的区别
 - call、apply、bind 都是用来改变 this 关键字的。
