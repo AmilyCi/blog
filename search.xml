@@ -54,12 +54,12 @@
   </entry>
   <entry>
     <title>前端跨域解决方案</title>
-    <url>/blog/2020/05/23/hello-world/</url>
+    <url>/blog/2020/05/08/hello-world/</url>
     <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
 <h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
 <li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
 服务端<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
-页面显示<img src="/blog/2020/05/23/hello-world/result.png" class=""></li>
+页面显示<img src="/blog/2020/05/08/hello-world/result.png" class=""></li>
 <li>优点<ul>
 <li>JSONP 使用简单且兼容性不错</li>
 </ul>
@@ -158,6 +158,53 @@
 <li><p>在IE浏览器中，我们的原型模式也是同样的原理，但是IE浏览器怕你通过<code>__proto__</code>把公有的修改，禁止我们使用<code>__proto__</code>。</p>
 </li>
 </ul>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>检测数据类型的几种方式</title>
+    <url>/blog/2020/05/23/typeof/</url>
+    <content><![CDATA[<h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><ul>
+<li><p>typeof 检测基本数据类型，除了 null 以外其它的都可以检测出来，typeof(null) 返回的结果是 “object”。</p>
+</li>
+<li><p>typeof 检测引用数据类型，除了函数以外其它返回的结果都是 “object”。</p>
+</li>
+<li><p>使用 typeof 检测数据类型，返回的结果是字符串包含着对应的数据类型。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">typeof</span>(<span class="hljs-literal">null</span>); <span class="hljs-comment">// "object"</span><br><br><span class="hljs-keyword">typeof</span>(<span class="hljs-string">"2"</span>); <span class="hljs-comment">// "string"</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><ul>
+<li><p>instanceof 检测某一个实例是否属于某个类。</p>
+</li>
+<li><p>不能用来检测和处理字面量方式创建出来的基本数据类型值。</p>
+</li>
+<li><p>instanceof 的特性：只要在当前实例的原型链上，我们用其检测出来的结果都是true。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>()<br><br>obj <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><ul>
+<li><p>作用和 instanceof 非常的相似。</p>
+</li>
+<li><p>constructor 可以处理基本数据类型的检测。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> a = <span class="hljs-number">111</span>;<br><span class="hljs-keyword">const</span> b = &#123;&#125;;<br>a.constructor === <span class="hljs-built_in">Number</span>; <span class="hljs-comment">// true</span><br>b.constructor === <span class="hljs-built_in">Object</span>; <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><ul>
+<li><p>最准确常用的方式。</p>
+</li>
+<li><p>第一个object代表当前实例是对象数据类型的（这个是固定死的）第二个Object，代表的是obj所属的类是Object。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>); <span class="hljs-comment">// "[object String]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call([]); <span class="hljs-comment">// "[object Array]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;); <span class="hljs-comment">// "[object Function]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">111</span>); <span class="hljs-comment">// "[object Number]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>); <span class="hljs-comment">//"[object Null]"</span><br></code></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>JS基础</category>
