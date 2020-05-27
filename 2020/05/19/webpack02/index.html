@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">392</span>
+            <span class="post-count">738</span>
         </span>
     </span>
 
@@ -79,7 +79,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
@@ -90,6 +90,8 @@
 
     
     
+    <div class="tocbot"></div>
+
 
 
 
@@ -102,8 +104,17 @@
       
 
       
-      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack可以配置两种环境模式，即：<code>开发环境</code>和<code>生产环境</code>。开发环境是 能让代码本地调试运行的环境，生产环境是 能让代码优化上线运行的环境。我们写的源代码里面包含了 es6 语法, less 文件要经过webpack进行编译处理,比如将 less 文件编译成 css 文件，把 es6 语法编译成浏览器能够识别的语法，然后输出的 bundle 这个资源文件就可以被浏览器运行了，为了让开发者更轻松，这里还添加了一些自动化工作，比如自动打开浏览器，自动刷新，自动编译等等一些咧操作，让我们的效率更高，这就是开发环境所做的事情。我们的样式在之前处理是整合到js中的，如果让样式在 js 中，会让 js 体积变得很大，下载的很慢，同时，这里会先加载js，再通过创建<code>&lt;style&gt;</code>标签，会出现闪屏的现象，所以我们要将css从js文件中提取出来，还有代码压缩，兼容性处理都可以让带吗更快，性能更好，能够平稳的运行，这样我们要做的事情会很多，如果把这些都放在开发环境下，那开发环境要做的事情就太多了，打包速度就会很慢，不利于我们开发，所以这些事情我们要放在生产环境上去做。</p>
+      <h3 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack 可以配置两种环境模式，即：<code>开发环境</code>和<code>生产环境</code>。开发环境是 能让代码本地调试运行的环境，生产环境是 能让代码优化上线运行的环境。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们写的源代码里面包含了 es6 语法, less 文件要经过webpack进行编译处理,比如将 less 文件编译成 css 文件，把 es6 语法编译成浏览器能够识别的语法，然后输出的 bundle 这个资源文件就可以被浏览器运行了，为了让开发者更轻松，这里还添加了一些自动化工作，比如自动打开浏览器，自动刷新，自动编译等等一些咧操作，让我们的效率更高，这就是开发环境所做的事情。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们的样式在之前处理是整合到js中的，如果让样式在 js 中，会让 js 体积变得很大，下载的很慢，同时，这里会先加载js，再通过创建<code>&lt;style&gt;</code>标签，会出现闪屏的现象，所以我们要将css从js文件中提取出来，还有代码压缩，兼容性处理都可以让带吗更快，性能更好，能够平稳的运行，这样我们要做的事情会很多，如果把这些都放在开发环境下，那开发环境要做的事情就太多了，打包速度就会很慢，不利于我们开发，所以这些事情我们要放在生产环境上去做。</p>
+<h3 id="提取css成单独文件"><a href="#提取css成单独文件" class="headerlink" title="提取css成单独文件"></a>提取css成单独文件</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这里需要用到一个新的插件 <code>miniCssExtractPlugin</code>，引用这个插件之后打包出来的样式是以 <code>&lt;link&gt;</code>  引入，而不是 <code>&lt;style&gt;</code> 标签，所以不会出现闪屏现象，并且 css 文件和 js 文件分割开了，js 文件的体积也没有那么大，解析速度会更好一些。</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    <span class="hljs-comment">// 创建style标签，将样式放入</span><br>                    <span class="hljs-comment">// 'style-loader', </span><br>                    <span class="hljs-comment">// 这个loader取代style-loader。作用：提取js中的css成单独文件</span><br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-comment">// 将css整合到js文件中</span><br>                    <span class="hljs-string">'css-loader'</span><br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            <span class="hljs-comment">// 对输出的css文件进行重命名</span><br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>目录文件</p>
+{% asset_img catalogue.jpeg  %}
 
+<p>打包输出的 index.html 文件</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width, initial-scale=1.0"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"css/built.css"</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"js/built.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
       
       <!-- reward -->
       
