@@ -73,3 +73,151 @@ module.exports = {
 <script src="js/built.js"></script></body>
 </html>
 ```
+
+### css的兼容性处理
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;有时我们写的 css 样式并不是在所有的浏览器上都兼容，而 webpack 的 postcss-loader 会帮助我们解决这个问题。
+
+webpack.config.js
+```js
+const { resolve } = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const miniCssExtractPlugin = require('mini-css-extract-plugin')
+
+// 设置nodejs环境变量
+process.env.NODE_ENV = 'development'
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/built.js',
+        path: resolve(__dirname, 'build')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    miniCssExtractPlugin.loader,
+                    // 这种写法是使用loader的默认配置
+                    'css-loader',
+                    /*
+                        css兼容性处理：postcss --> postcss-loader postcss-preset-env，下载这两个包
+
+                        postcss-preset-env插件帮postcss找到package.json中 browserslist 里面的配置，通过配置加载指定的css兼容性样式
+
+                        “browserslist”:{
+                            开发环境 --> 设置node环境变量 : process.env.NODE_ENV = development
+                            "development":[
+                                "last 1 chrome version",
+                                "last 1 firefox version",
+                                "last 1 safari version"
+                            ],
+                            生产环境：默认是看生产环境
+                            "production":[
+                                ">0.2%",
+                                "not dead",
+                                "not op_mini all"
+                            ]
+                        }
+                    */
+                   // 使用loader的默认配置
+                   // "postcss-loader"
+                   // 修改loader的配置
+                   {
+                       loader: 'postcss-loader',
+                       options: {
+                           // 固定写法
+                           ident: 'postcss',
+                           plugins: ()=> [
+                               // postcss插件
+                               require('postcss-preset-env')()
+                           ]
+                       }
+                   }
+                ]
+            }
+        ]
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html'
+        }),
+        new miniCssExtractPlugin({
+            filename: 'css/built.css'
+        })
+    ],
+    mode: 'development'
+}
+```
+package.json
+
+```json
+{
+  "name": "webpack_code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^3.5.3",
+    "file-loader": "^6.0.0",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
+    "less": "^3.11.1",
+    "less-loader": "^6.1.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "style-loader": "^1.2.1",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "browserslist":{
+    "development":[
+        "last 1 chrome version",
+        "last 1 firefox version",
+        "last 1 safari version"
+    ],
+    "production":[
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
+    ]
+  }
+}
+```
+
+a.css
+
+```css
+#box1 {
+    width: 100px;
+    height: 100px;
+    background-color: pink;
+    display: flex;
+    backface-visibility: hidden;
+}
+```
+
+打包之后的css文件
+```css
+#box1 {
+    width: 100px;
+    height: 100px;
+    background-color: pink;
+    display: flex;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+}
+#box2 {
+    width: 200px;
+    height: 200px;
+    background-color: deeppink;
+}
+```
