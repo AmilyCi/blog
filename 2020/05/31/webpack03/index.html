@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    前端跨域解决方案 |  前端小白菜
+    webpack03 |  前端小白菜
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -38,7 +38,7 @@
   <div id="app">
     <main class="content on">
       <section class="outer">
-  <article id="post-hello-world" class="article article-type-post" itemscope
+  <article id="post-webpack03" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -46,7 +46,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  前端跨域解决方案
+  webpack03
 </h1>
  
 
@@ -55,12 +55,12 @@
 
     
     <div class="article-meta">
-      <a href="/blog/2020/05/27/hello-world/" class="article-date">
-  <time datetime="2020-05-27T17:34:06.108Z" itemprop="datePublished">2020-05-28</time>
+      <a href="/blog/2020/05/31/webpack03/" class="article-date">
+  <time datetime="2020-05-31T11:03:18.000Z" itemprop="datePublished">2020-05-31</time>
 </a>
       
   <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF/">前端技术</a>
+    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/">前端构建工具</a>
   </div>
 
       
@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.4k</span>
+            <span class="post-count">556</span>
         </span>
     </span>
 
@@ -79,7 +79,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">5 分钟</span>
+            <span class="post-count">2 分钟</span>
         </span>
     </span>
 </div>
@@ -104,69 +104,24 @@
       
 
       
-      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
-<h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
-<li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
-服务端<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
-页面显示<img src="/blog/2020/05/28/hello-world/result.png" class=""></li>
-<li>优点<ul>
-<li>JSONP 使用简单且兼容性不错</li>
-</ul>
-</li>
-<li>缺点<ul>
-<li>只限于 get 请求（即只读）</li>
-<li>它只支持跨域HTTP这种情况</li>
-<li>jsonp在调用失败的时候，不会返回各种HTTP状态码（jsonp的错误处理机制并不完善，我们没办法进行错误处理）</li>
-<li>需要客户端和服务端定制进行开发，服务端返回的数据不是标准的json数据，而是callback包裹的数据</li>
-<li>JSONP只会发一次请求</li>
-</ul>
-</li>
-</ul>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发中可能会遇到多个JSONP请求的回调函数名是相同的，这时候就需要自己封装一个JSONP，下面是实现的代码</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, jsonpCallback, success</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'script'</span>)<br>    script.src = url<br>    script.async = <span class="hljs-literal">true</span><br>    script.type = <span class="hljs-string">'text/javascript'</span><br>    <span class="hljs-built_in">window</span>[jsonpCallback] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>&#123;<br>        success &amp;&amp; success(data)<br>    &#125;<br>    <span class="hljs-built_in">document</span>.body.appendChild(script)<br>&#125;<br>jsonp(<span class="hljs-string">'http://127.0.0.1:8888/get/jsonp'</span>, <span class="hljs-string">'callback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(value)<br>&#125;)<br></code></pre></td></tr></table></figure>
+      <h3 id="eslint检查js"><a href="#eslint检查js" class="headerlink" title="eslint检查js"></a>eslint检查js</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;如果我们好多人开发一个项目，每个人有自己一套代码规范，这样会造成代码混乱，不宜维护。而 eslint 可以解决这个问题，让开发者使用同一套代码规范。</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            <span class="hljs-comment">/*</span><br><span class="hljs-comment">                语法检查：eslint-loader eslint</span><br><span class="hljs-comment">                注意：只检查自己写的源代码，第三方的库是不用检查的。</span><br><span class="hljs-comment">                设置检查规则：</span><br><span class="hljs-comment">                    package.json中eslintConfig中设置</span><br><span class="hljs-comment">                        "eslintConfig":&#123;</span><br><span class="hljs-comment">                            "extends": "airbnb-base"</span><br><span class="hljs-comment">                        &#125;</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">                    https://github.com/airbnb/javascript</span><br><span class="hljs-comment">                    airbnb   --&gt;  eslint-config-airbnb-base eslint eslint-plugin-import</span><br><span class="hljs-comment">            */</span><br>           &#123;<br>               test: <span class="hljs-regexp">/\.js$/</span>,<br>               exclude: <span class="hljs-regexp">/node_modules/</span>,<br>               loader: <span class="hljs-string">'eslint-loader'</span>,<br>               options: &#123;<br>                   <span class="hljs-comment">// 自动修复eslint的错误</span><br>                   fix: <span class="hljs-literal">true</span><br>               &#125;<br>           &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>需要 <code>npm i eslint-loader eslint eslint-config-airbnb-base eslint-plugin-import</code></p>
+<p>package.json</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs json">&#123;<br>  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"webpack_code"</span>,<br>  <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,<br>  <span class="hljs-attr">"description"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,<br>  <span class="hljs-attr">"scripts"</span>: &#123;<br>    <span class="hljs-attr">"test"</span>: <span class="hljs-string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><br>  &#125;,<br>  <span class="hljs-attr">"author"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"license"</span>: <span class="hljs-string">"ISC"</span>,<br>  <span class="hljs-attr">"devDependencies"</span>: &#123;<br>    <span class="hljs-attr">"css-loader"</span>: <span class="hljs-string">"^3.5.3"</span>,<br>    <span class="hljs-attr">"eslint"</span>: <span class="hljs-string">"^7.1.0"</span>,<br>    <span class="hljs-attr">"eslint-config-airbnb-base"</span>: <span class="hljs-string">"^14.1.0"</span>,<br>    <span class="hljs-attr">"eslint-loader"</span>: <span class="hljs-string">"^4.0.2"</span>,<br>    <span class="hljs-attr">"eslint-plugin-import"</span>: <span class="hljs-string">"^2.20.2"</span>,<br>    <span class="hljs-attr">"file-loader"</span>: <span class="hljs-string">"^6.0.0"</span>,<br>    <span class="hljs-attr">"html-loader"</span>: <span class="hljs-string">"^1.1.0"</span>,<br>    <span class="hljs-attr">"html-webpack-plugin"</span>: <span class="hljs-string">"^4.3.0"</span>,<br>    <span class="hljs-attr">"less"</span>: <span class="hljs-string">"^3.11.1"</span>,<br>    <span class="hljs-attr">"less-loader"</span>: <span class="hljs-string">"^6.1.0"</span>,<br>    <span class="hljs-attr">"mini-css-extract-plugin"</span>: <span class="hljs-string">"^0.9.0"</span>,<br>    <span class="hljs-attr">"optimize-css-assets-webpack-plugin"</span>: <span class="hljs-string">"^5.0.3"</span>,<br>    <span class="hljs-attr">"postcss-loader"</span>: <span class="hljs-string">"^3.0.0"</span>,<br>    <span class="hljs-attr">"postcss-preset-env"</span>: <span class="hljs-string">"^6.7.0"</span>,<br>    <span class="hljs-attr">"style-loader"</span>: <span class="hljs-string">"^1.2.1"</span>,<br>    <span class="hljs-attr">"url-loader"</span>: <span class="hljs-string">"^4.1.0"</span>,<br>    <span class="hljs-attr">"webpack"</span>: <span class="hljs-string">"^4.43.0"</span>,<br>    <span class="hljs-attr">"webpack-cli"</span>: <span class="hljs-string">"^3.3.11"</span>,<br>    <span class="hljs-attr">"webpack-dev-server"</span>: <span class="hljs-string">"^3.11.0"</span><br>  &#125;,<br>  <span class="hljs-attr">"browserslist"</span>: &#123;<br>    <span class="hljs-attr">"development"</span>: [<br>      <span class="hljs-string">"last 1 chrome version"</span>,<br>      <span class="hljs-string">"last 1 firefox version"</span>,<br>      <span class="hljs-string">"last 1 safari version"</span><br>    ],<br>    <span class="hljs-attr">"production"</span>: [<br>      <span class="hljs-string">"&gt;0.2%"</span>,<br>      <span class="hljs-string">"not dead"</span>,<br>      <span class="hljs-string">"not op_mini all"</span><br>    ]<br>  &#125;,<br>  <span class="hljs-attr">"eslintConfig"</span>:&#123;<br>    <span class="hljs-attr">"extends"</span>: <span class="hljs-string">"airbnb-base"</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>接下来我们可以试验一下，在 js 中写一些不规范的代码</p>
+<p>index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">a, b</span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> a+b;<br>&#125;<br><span class="hljs-built_in">console</span>.log(add(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>))<br></code></pre></td></tr></table></figure>
+<p>之后运行webpack，我们再来看一下 index.js 文件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">a, b</span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> a + b;<br>&#125;<br><span class="hljs-built_in">console</span>.log(add(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>));<br></code></pre></td></tr></table></figure>
+<p>所有的代码都规范了，但是，在控制台有一个警告，建议我们不要在这里写 console.log</p>
+<img src="/blog/2020/05/31/webpack03/warn.png" class="">
 
-<h3 id="2、CORS"><a href="#2、CORS" class="headerlink" title="2、CORS"></a>2、CORS</h3><ul>
-<li>原理：服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。</li>
-</ul>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;虽然设置 CORS和前端没什么关系，但是通过这种方式解决跨域问题的话，会在发送请求时出现两种情况，分别为简单请求和复杂请求</p>
-<h4 id="简单请求"><a href="#简单请求" class="headerlink" title="简单请求"></a>简单请求</h4><p>1、使用下列方法之一：</p>
-<ul>
-<li>GET</li>
-<li>HEAD</li>
-<li>POST</li>
-</ul>
-<p>2、HTTP头信息不超出以下几种字段：</p>
-<ul>
-<li>Accept</li>
-<li>Accept-Language</li>
-<li>Content-Language</li>
-<li>Last-Event-ID</li>
-<li>Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain</li>
-</ul>
-<h4 id="复杂请求"><a href="#复杂请求" class="headerlink" title="复杂请求"></a>复杂请求</h4><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。</p>
-<ul>
-<li>优点：<ul>
-<li>CORS支持所有的浏览器请求类型，承载的请求数据量更大，开放更简洁，服务端只需要将处理后的数据直接返回，不需要再特殊处理。</li>
-<li>CORS可以通过onerror事件监听错误，并且浏览器控制台会看到报错信息，利于排查。</li>
-</ul>
-</li>
-</ul>
-<h3 id="3、document-domain"><a href="#3、document-domain" class="headerlink" title="3、document.domain"></a>3、document.domain</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;该方法只能用于主域名相同的情况下,比如<code>a.test.com</code> 和 <code>b.test.com</code>,只需要给页面添加<code>document.domain = &#39;test.com&#39;</code>就可以实现跨域。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;比如我们可以打开 <a href="https://id.qq.com/login/ptlogin.html" target="_blank" rel="noopener">id.qq.com</a>，调出控制台，输入<code>let w = window.open(&#39;http://www.qq.com&#39;)</code>，之后访问<code>w.document</code>，发现控制台会报出跨域相关的错误。这时我们再在控制台中输入<code>document.domain = &#39;qq.com&#39;</code>，再访问<code>w.document</code>，这样就可以了。</p>
-{% asset_img jt.png  %}
-<ul>
-<li>注意：两个域名的主域名必须相同，并且所有的协议、端口都要一致，否则无法利用document.domain进行跨域。</li>
-</ul>
-<h3 id="4、postMessage"><a href="#4、postMessage" class="headerlink" title="4、postMessage"></a>4、postMessage</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这种方式一般会用在iframe嵌入其他页面时需要通信的情况下，只要正确的使用，这种方法很安全。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"iframe"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://test.com"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 发送端</span><br><span class="hljs-keyword">const</span> iframe = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'iframe);</span><br><span class="hljs-string">iframe.contentWindow.postMessage('</span>&#123;<span class="hljs-string">"method"</span>:<span class="hljs-string">"closeWindows"</span>&#125;<span class="hljs-string">', "http://test.com")</span><br></code></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//接收端</span><br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(e.data)<br>&#125;, <span class="hljs-literal">false</span>)<br></code></pre></td></tr></table></figure>
-<ul>
-<li>注意：<ul>
-<li>当使用postMessage将数据发送到其他窗口时，始终指定精确的目标origin，而不是*。 恶意网站可以在您不知情的情况下更改窗口的位置，因此它可以拦截使用postMessage发送的数据。</li>
-<li>如果不希望从其他网站接收message，不要为message事件添加任何事件侦听器，这是一个完全万无一失的方式来避免安全问题。</li>
-</ul>
-</li>
-</ul>
+<p>我们再来修改一下这个 index.js 文件吧</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">a, b</span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> a + b;<br>&#125;<br><br><span class="hljs-comment">// 下一行eslint所有规则都失效（下一行不进行eslint检查）</span><br><span class="hljs-comment">// eslint-disable-next-line</span><br><span class="hljs-built_in">console</span>.log(add(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>));<br></code></pre></td></tr></table></figure>
+
+<p>现在再运行 webpack 就不会有任何警告了</p>
 
       
       <!-- reward -->
@@ -235,13 +190,15 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/05/27/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/05/31/webpack03/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/" rel="tag">webpack</a></li></ul>
+
 
     </footer>
 
@@ -251,19 +208,10 @@
   
   <nav class="article-nav">
     
-      <a href="/blog/2020/05/31/webpack03/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            webpack03
-          
-        </div>
-      </a>
     
-    
-      <a href="/blog/2020/05/23/arry/" class="article-nav-link">
+      <a href="/blog/2020/05/27/hello-world/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">数组中常用的方法</div>
+        <div class="article-nav-title">前端跨域解决方案</div>
       </a>
     
   </nav>
