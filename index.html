@@ -72,6 +72,78 @@
     
     
     
+    <article id="post-webpack04" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/blog/2020/06/07/webpack04/"
+    >webpack04</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/06/07/webpack04/" class="article-date">
+  <time datetime="2020-06-07T17:43:01.000Z" itemprop="datePublished">2020-06-08</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/">前端构建工具</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="开发环境的配置"><a href="#开发环境的配置" class="headerlink" title="开发环境的配置"></a>开发环境的配置</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123;resolve&#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> MiniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><span class="hljs-keyword">const</span> OptimizeCssAssetsWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'optimize-css-assets-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-comment">// 定义nodejs的环境变量：绝决定使用browserslist的哪个环境</span><br>process.env.NODE_ENV = <span class="hljs-string">'production'</span><br><br><span class="hljs-comment">// 复用loader</span><br><span class="hljs-keyword">const</span> commonCssLoader =  [<br>    MiniCssExtractPlugin.loader,<br>    <span class="hljs-string">'css-loader'</span>,<br>    &#123;<br>        <span class="hljs-comment">// 还需要在package.json中定义browserslist</span><br>        loader: <span class="hljs-string">'postcss-loader'</span>,<br>        options: &#123;<br>            ident: <span class="hljs-string">'postcss'</span>,<br>            plugins: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<br>                <span class="hljs-built_in">require</span>(<span class="hljs-string">'postcss-preset-env'</span>)()<br>            ]<br>        &#125;<br>    &#125;<br>]<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [...commonCssLoader]<br>            &#125;,<br>            &#123;<br>                test: <span class="hljs-regexp">/\.less$/</span>,<br>                use: [<br>                    ...commonCssLoader,<br>                    <span class="hljs-string">'less-loader'</span><br>                ]<br>            &#125;,<br>            <span class="hljs-comment">// js语法检查</span><br>            <span class="hljs-comment">/* 正常来讲： 一个文件只能被一个Loader处理。</span><br><span class="hljs-comment">               当一个文件要被多个loader处理，那么一定要指定loader的执行先后顺序：</span><br><span class="hljs-comment">                  先执行eslint，再执行babel</span><br><span class="hljs-comment">            */</span><br>            &#123;<br>                <span class="hljs-comment">// 在package.json中eslintConfig --&gt; airbnb</span><br>                test: <span class="hljs-regexp">/\.js$/</span>,<br>                exclude: <span class="hljs-regexp">/node_module/</span>,<br>                <span class="hljs-comment">// 优先执行</span><br>                enforce: <span class="hljs-string">'pre'</span>,<br>                loader: <span class="hljs-string">'eslint-loader'</span>,<br>                options: &#123;<br>                    fix: <span class="hljs-literal">true</span><br>                &#125;<br>            &#125;,<br>            <span class="hljs-comment">// js兼容性处理</span><br>            &#123;<br>                <span class="hljs-comment">// 在package.json中eslintConfig --&gt; airbnb</span><br>                test: <span class="hljs-regexp">/\.js$/</span>,<br>                exclude: <span class="hljs-regexp">/node_module/</span>,<br>                loader: <span class="hljs-string">'babel-loader'</span>,<br>                options: &#123;<br>                    presets: [<br>                        <span class="hljs-string">'@babel/preset-env'</span>,<br>                        &#123;<br>                            useBuiltIns: <span class="hljs-string">'usage'</span>,<br>                            corejs: &#123;<span class="hljs-attr">version</span>: <span class="hljs-number">3</span>&#125;,<br>                            targets: &#123;<br>                                chrome: <span class="hljs-string">'60'</span>,<br>                                firefox: <span class="hljs-string">'50'</span><br>                            &#125;<br>                        &#125;<br>                    ]<br>                &#125;<br>            &#125;,<br>            &#123;<br>                test: <span class="hljs-regexp">/\.(gif|jpg|png)/</span>,<br>                loader: <span class="hljs-string">'url-loader'</span>,<br>                options: &#123;<br>                    limit: <span class="hljs-number">8</span> * <span class="hljs-number">1024</span>,<br>                    name: <span class="hljs-string">'[hash:10].[ext]'</span>,<br>                    outputPath: <span class="hljs-string">'imgs'</span>,<br>                    esModule: <span class="hljs-literal">false</span><br>                &#125;<br>            &#125;,<br>            <span class="hljs-comment">// 解析html中的图片</span><br>            &#123;<br>                test: <span class="hljs-regexp">/\.html$/</span>,<br>                loader: <span class="hljs-string">'html-loader'</span><br>            &#125;,<br>            <span class="hljs-comment">// 其他所有的文件处理</span><br>            &#123;<br>                exclude: <span class="hljs-regexp">/\.(js|css|html|less|jpg|png|gif)/</span>,<br>                loader: <span class="hljs-string">'file-loader'</span>,<br>                options: &#123;<br>                    outputPath: <span class="hljs-string">'media'</span><br>                &#125;<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> MiniCssExtractPlugin(&#123;<br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;),<br>        <span class="hljs-comment">// 压缩css</span><br>        <span class="hljs-keyword">new</span> OptimizeCssAssetsWebpackPlugin(),<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span>,<br>            minify: &#123;<br>                collapseWhitespace: <span class="hljs-literal">true</span>,<br>                removeComments: <span class="hljs-literal">true</span><br>            &#125;<br>        &#125;)<br><br>    ],<br>    mode: <span class="hljs-string">'production'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/" rel="tag">webpack</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+</article>
+    
     <article id="post-webpack03" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -965,106 +1037,6 @@
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/TCP/" rel="tag">TCP</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-  
-  
-
-</article>
-    
-    <article id="post-statusCode" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/20/statusCode/"
-    >HTTP状态码</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/blog/2020/05/20/statusCode/" class="article-date">
-  <time datetime="2020-05-20T14:23:32.000Z" itemprop="datePublished">2020-05-20</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;状态码的职责是当客户端向服务器端发送请求时，描述返回的请求结果。</p>
-<ul>
-<li>2XX 成功<ul>
-<li>200 OK：表示从客户端发来的请求在服务器端被正常处理了。</li>
-<li>204 No Content：表示服务器接收的请求已成功处理，但在返回的响应报文中 不含实体的主体部分。另外，也不允许返回任何实体的主体。</li>
-<li>206 Partial Content：表示客户端进行了范围请求，而服务器成功执行了这部分的 GET 请求。</li>
-</ul>
-</li>
-<li>3XX 重定向<ul>
-<li>301 Moved Permanently：永久性重定向。表示请求的资源已被分配了新的 URI，以后 应使用资源现在所指的 URI。</li>
-<li>302 Found：临时性重定向。表示请求的资源已被分配了新的 URI，希望 用户(本次)能使用新的 URI 访问。</li>
-<li>303 See Other：表示由于请求对应的资源存在着另一个 URI，应使用 GET 方法定向获取请求的资源。</li>
-<li>304 Not Modified：表示客户端发送附带条件的请求时，服务器端允许请求访 问资源，但未满足条件的情况。</li>
-<li>307 Temporary Redirect：临时重定向。该状态码与 302 Found 有着相同的含义。</li>
-</ul>
-</li>
-<li>4XX 客户端错误<ul>
-<li>400 Bad Request：表示请求报文中存在语法错误。</li>
-<li>401 Unauthorized：表示发送的请求需要有通过 HTTP 认证(BASIC 认证、 DIGEST 认证)的认证信息。另外若之前已进行过 1 次请求，则表示 用 户认证失败。</li>
-<li>403 Forbidden：表示对请求资源的访问被服务器拒绝了。</li>
-<li>404 Not Found：表示服务器上无法找到请求的资源。</li>
-</ul>
-</li>
-<li>5XX 服务器错误<ul>
-<li>500 Internal Server Error：表示服务器端在执行请求时发生了错误。</li>
-<li>503 Service Unavailable：表示服务器暂时处于超负载或正在进行停机维护，现在无法 处理请求。</li>
-</ul>
-</li>
-</ul>
-
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/http/" rel="tag">http</a></li></ul>
 
 
     </footer>
