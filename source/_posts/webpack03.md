@@ -139,3 +139,100 @@ console.log(add(2, 3));
 
 现在再运行 webpack 就不会有任何警告了
 
+### babel处理js兼容性
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;当我们使用 ES6 语法来写代码时，我们在谷歌浏览器打开完全没有问题，但是使用IE打开就会报错，比如箭头函数，在IE下是不识别的，这时我们就需要用到 babel 了，来将 ES6 甚至更高级的语法转换成浏览器识别的语法。我们需要下载 ```babel-loader``` ```@babel/core``` ```@babel/preset-env```
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在 webpack 中，按照以上的方法处理后，确实 IE 能识别像箭头函数这样的语法了，但是像更高级的语法 promise 却还是无法识别，这时我们需要做全部兼容性处理，用到 ```@babel/polyfill``` ，下载完成后，只需在代码中用 ```import '@babel/polyfill'```引入即可，我们再打开浏览器看一下，确实可以识别了 promise。
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;虽然现在所有的语法都识别了，但现在还是有一个弊端，之前我们打的包可能也就几十KB，可是现在打出来的包需要几百KB，一下子打了好多，别着急，这时候我们就可以用按需加载了，只需要加载我们需要做兼容性处理的部分就好了，我们需要下载一个 ```core-js```，webpack具体配置如下：
+
+```js
+const { resolve } = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/built.js',
+        path: resolve(__dirname, 'build')
+    },
+    module: {
+        rules: [
+           /*
+            js兼容性处理：babel-loader @babel/core (需下载这两个)
+            1.基本兼容性处理 --> @babel/preset-env （下载）
+              问题：只能转换基本语法，如promise高级语法不能转换
+            2.全部兼容性处理 --> @babel/polyfill （下载）
+              问题：我只要解决部分兼容性问题，但是将所有兼容性代码全部引入，体积太大了~
+            3.需要做兼容性处理的就做：按需加载 --> corejs (下载core-js)
+
+           */
+          {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              loader: 'babel-loader', 
+              options: {
+                  // 预设：指示babel做怎么样的兼容性处理
+                // presets: ['@babel/preset-env']
+                presets: [
+                    '@babel/preset-env',
+                    {
+                        // 按需加载
+                        useBuiltIns: 'usage',
+                        corejs: {
+                            version: 3
+                        },
+                        // 指定兼容性做到哪个版本的浏览器
+                        targets: {
+                            chrome: '60',
+                            firefox: '60',
+                            ie: '9',
+                            safari: '10',
+                            edge: '17'
+                        }
+                    }
+                ]
+              }
+          }
+        ]
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html'
+        })
+    ],
+    mode: 'development'
+}
+```
+现在我们再回过头来看我们的包，比之前打出来的包要小很多，所以，平时我们开发时推荐使用1，3方法，不推荐全部兼容处理。
+
+### 压缩js、html
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;js 的压缩很简单，只需要将```mode```设置为 ```production```即可，因为 webpack 会默认将生产环境的 js 代码进行压缩，而 html 的压缩需要在 webpack 中进行简单的配置一下即可。
+```js
+const { resolve } = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/built.js',
+        path: resolve(__dirname, 'build')
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            // 压缩html
+            minify: {
+                // 移除空格
+                collapseWhitespace: true,
+                // 移除注释
+                removeComments: true
+            }
+        })
+    ],
+    // 生产环境下会自动压缩js代码
+    mode: 'production'
+}
+```
