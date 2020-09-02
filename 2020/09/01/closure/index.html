@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    节流与防抖 |  前端小白菜
+    闭包 |  前端小白菜
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -38,7 +38,7 @@
   <div id="app">
     <main class="content on">
       <section class="outer">
-  <article id="post-throttle" class="article article-type-post" itemscope
+  <article id="post-closure" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -46,7 +46,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  节流与防抖
+  闭包
 </h1>
  
 
@@ -55,12 +55,12 @@
 
     
     <div class="article-meta">
-      <a href="/blog/2020/08/17/throttle/" class="article-date">
-  <time datetime="2020-08-17T12:20:30.000Z" itemprop="datePublished">2020-08-17</time>
+      <a href="/blog/2020/09/01/closure/" class="article-date">
+  <time datetime="2020-09-01T09:12:13.000Z" itemprop="datePublished">2020-09-01</time>
 </a>
       
   <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
+    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
   </div>
 
       
@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">592</span>
+            <span class="post-count">822</span>
         </span>
     </span>
 
@@ -79,7 +79,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">2 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
@@ -104,14 +104,27 @@
       
 
       
-      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;节流和防抖是我们平常开发经常会用到的性能优化之一，它们都是用来限制函数的执行频率，用来优化函数触发频率过高导致的响应速度跟不上，延迟假死或卡顿的现象，下面就让我们来详细的分析一下怎样来做节流与防抖。</p>
-<h3 id="防抖"><a href="#防抖" class="headerlink" title="防抖"></a>防抖</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的防抖就是在一定时间内如果某个事件被高频的触发,那么我们就延时让他执行，比如，我们可以设置一个定时器，时间为3s，当我们第一次触发行为时，计时器开始计时，如果在倒计时时间内没有再次触发行为，那么计时结束后会执行函数，但是在计时时间内如果又触发了该行为，则计时器开始重新计时，以此类推，其实防抖就是在触发高频率的行为时只执行一次函数，这样通过控制次数来提高性能。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">debounce</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> timeout<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">if</span>(!timeout)&#123;<br>      <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>      <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>      timeout = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        fn.apply(context, arg)<br>      &#125;,wait)<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>      clearTimeout(timeout)<br>    &#125;<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是防抖'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, debounce(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 prin 事件</p>
-<h3 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的节流就是在高频的触发某个行为时，我们设置一个规定的时间，在该时间内只会执行一次，节流会稀释函数执行的频率。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们还是用上述的滚动事件来举例，代码如下</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">throttle</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> time = <span class="hljs-number">0</span>, timer = <span class="hljs-literal">null</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> now = <span class="hljs-built_in">Date</span>.now()<br>    <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>    <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>    <span class="hljs-keyword">if</span> (now - time &gt; wait) &#123;<br>      fn.apply(context, arg)<br>      time = now<br>    &#125; <span class="hljs-keyword">else</span> (<br>      timer &amp;&amp; clearTimeout(timer)<br>      timer = setTimeout( <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        time = now<br>        fn.apply(context, arg)<br>      &#125;, wait)<br>    )<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是节流'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, throttle(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>
+      <h3 id="什么是闭包"><a href="#什么是闭包" class="headerlink" title="什么是闭包"></a>什么是闭包</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;一个函数A中包含另一个函数B，函数B可以获取函数A中的变量，函数B就是闭包。通常情况下我们在子作用域中可以获取父作用域中的变量，但是我们想要从父作用域中获取子作用域中的变量该怎么办呢，这时候我们可以通过闭包，返回子作用域中的变量，这样我们就可以获取了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> a = <span class="hljs-number">3</span>;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">father</span>(<span class="hljs-params">x</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> b = <span class="hljs-number">1</span> + x;<br>  <span class="hljs-keyword">return</span> (frunction()&#123;<br>    <span class="hljs-built_in">console</span>.log(b)<br>  &#125;)()<br>&#125;<br><span class="hljs-built_in">console</span>.log(a)<br>father(<span class="hljs-number">5</span>)<br></code></pre></td></tr></table></figure>
+<p>这段代码中，我们就可以在全局作用域中获取函数作用域中的变量b了。</p>
+<h3 id="闭包经常考察的知识点"><a href="#闭包经常考察的知识点" class="headerlink" title="闭包经常考察的知识点"></a>闭包经常考察的知识点</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>这是一道经典的面试题，控制台依次会输出什么，正确答案为：5，5，5，5，5，5假如用’-&gt;’表示为隔一秒钟，用’,’表示不间隔，那么怎么形容控制台的输出呢？答案为：5-&gt;5,5,5,5,5，是的，控制台会先输出一个5，之后过了一秒钟会连续输出五个5。<br>那么，让我们来分析一下，为什么并不是我们想要的输出：5，0，1，2，3，4呢？<br>在循环执行的过程中，几乎同时设置了5个定时器，这些定时器会在一秒之后触发，而循环之后的输出是立即执行的。<br>如果我们想让输出变为5-&gt;0,1,2,3,4，那应该怎么改写代码呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span>)<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>或者可以用另一个办法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>  &#125;, <span class="hljs-number">1000</span>, i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>还有一个最简单得办法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>以上的几个方法都可以达到我们想要得结果</p>
+<p>现在如果我们想要输出得结果为：0-&gt;1-&gt;2-&gt;3-&gt;4-&gt;5,那么我们应该怎么改写呢</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span> * j)<br>  &#125;)(i)<br>&#125;<br>setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;, <span class="hljs-number">1000</span> * i)<br></code></pre></td></tr></table></figure>
+<p>这是最简单直接得方法，我们还可以使用异步得Promise来完成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function">(<span class="hljs-params">j</span>) =&gt;</span> &#123;<br>    tasks.push(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>      setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>        resolve()<br>      &#125;, <span class="hljs-number">1000</span> * j)<br>    &#125;))<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>以上的代码可以简写为下面这种方式</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">const</span> output = <span class="hljs-function">(<span class="hljs-params">i</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>    resolve()<br>  &#125;, <span class="hljs-number">1000</span> * i)<br> &#125;)<br><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  tasks.push(output(i))<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>还可以使用async/await来实现</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> sleep = <span class="hljs-function">(<span class="hljs-params">time</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(resolve,time)<br>&#125;)<br>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>    <span class="hljs-keyword">if</span>(i &gt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>    &#125;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;<br>  <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;)()<br></code></pre></td></tr></table></figure>
+
       
       <!-- reward -->
       
@@ -179,7 +192,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/08/17/throttle/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/09/01/closure/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -197,19 +210,10 @@
   
   <nav class="article-nav">
     
-      <a href="/blog/2020/09/01/closure/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            闭包
-          
-        </div>
-      </a>
     
-    
-      <a href="/blog/2020/06/07/webpack04/" class="article-nav-link">
+      <a href="/blog/2020/08/17/throttle/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">webpack04</div>
+        <div class="article-nav-title">节流与防抖</div>
       </a>
     
   </nav>
