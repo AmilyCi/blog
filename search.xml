@@ -225,26 +225,6 @@
       </tags>
   </entry>
   <entry>
-    <title>http和https</title>
-    <url>/blog/2020/05/20/http/</url>
-    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 协议的全称为<code>超文本传输协议</code>。http 是以明文的方式发送内容，不提供任何方式的数据加密，因此 http 不适合传输敏感信息。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 默认工作在TCP协议 80 端口。</p>
-<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 协议的全称为<code>超文本传输安全协议</code>。它是为了解决 http 传输不安全而诞生的。https 在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 默认工作在 TCP 协议 443 端口。</p>
-<h3 id="https与http的区别"><a href="#https与http的区别" class="headerlink" title="https与http的区别"></a>https与http的区别</h3><ul>
-<li>http 是明文传输，数据都是未加密的，安全性较差，https 数据传输的过程是加密的，安全性好。</li>
-<li>https 协议需要到CA申请证书，免费的证书比较少，所以需要一定的费用</li>
-<li>http 页面响应速度比 https 快，因为 http 使用 TCP 三次握手建立连接，客户端和服务器需要交换3个包，https 除了 TCP 的三个包，还需要加上ssl握手需要的9个包，一共是12个包。</li>
-<li>https 和 http 使用的是完全不同的连接方式，用的端口也不一样，http 用的是 80 端口，https 用的是 443 端口。</li>
-<li>https 其实就是建构在 SSL/TLS 之上的 http 协议，所以 https 比 http 要更耗费服务器资源。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>网络基础</category>
-      </categories>
-      <tags>
-        <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>前端跨域解决方案</title>
     <url>/blog/2020/09/27/hello-world/</url>
     <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
@@ -316,10 +296,45 @@
       </categories>
   </entry>
   <entry>
-    <title>浏览器渲染整个页面的过程</title>
-    <url>/blog/2020/05/23/render/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;首先在地址栏中输入 url 地址，浏览器先查找自己本地的 DNS 记录找到对应的 IP 地址，如果本地没有找到就去 DNS服务器上查找，获取 IP 地址后开始建立 TCP 连接遵循三次握手就可以获取数据，浏览器开始解析 Html 构建 DOM 树，并行请求 css/image/js，CSS 文件下载完成，开始构建 CSS 树，CSS 树构建完成后和 DOM 树一起生成渲染树，计算出每个节点在屏幕中的位置，通过显卡把页面画到屏幕上。</p>
+    <title>http和https</title>
+    <url>/blog/2020/05/20/http/</url>
+    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 协议的全称为<code>超文本传输协议</code>。http 是以明文的方式发送内容，不提供任何方式的数据加密，因此 http 不适合传输敏感信息。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 默认工作在TCP协议 80 端口。</p>
+<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 协议的全称为<code>超文本传输安全协议</code>。它是为了解决 http 传输不安全而诞生的。https 在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 默认工作在 TCP 协议 443 端口。</p>
+<h3 id="https与http的区别"><a href="#https与http的区别" class="headerlink" title="https与http的区别"></a>https与http的区别</h3><ul>
+<li>http 是明文传输，数据都是未加密的，安全性较差，https 数据传输的过程是加密的，安全性好。</li>
+<li>https 协议需要到CA申请证书，免费的证书比较少，所以需要一定的费用</li>
+<li>http 页面响应速度比 https 快，因为 http 使用 TCP 三次握手建立连接，客户端和服务器需要交换3个包，https 除了 TCP 的三个包，还需要加上ssl握手需要的9个包，一共是12个包。</li>
+<li>https 和 http 使用的是完全不同的连接方式，用的端口也不一样，http 用的是 80 端口，https 用的是 443 端口。</li>
+<li>https 其实就是建构在 SSL/TLS 之上的 http 协议，所以 https 比 http 要更耗费服务器资源。</li>
+</ul>
 ]]></content>
+      <categories>
+        <category>网络基础</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>js中的继承</title>
+    <url>/blog/2020/09/25/inherit/</url>
+    <content><![CDATA[<h3 id="1、原型链继承"><a href="#1、原型链继承" class="headerlink" title="1、原型链继承"></a>1、原型链继承</h3><ul>
+<li>原理：原型链对象变成父类的实例，子类就可以调用父类的方法和属性（利用原型让一个引用类型继承另一个引用类型的属性和方法）<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123; &#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> child = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCi'</span>)<br><br><span class="hljs-built_in">console</span>.log(child.age) <span class="hljs-comment">// 13</span><br><span class="hljs-built_in">console</span>.log(child.getName()) <span class="hljs-comment">// 'AmilyCi'</span><br></code></pre></td></tr></table></figure></li>
+<li>优点：实现起来简单</li>
+<li>缺点：不能向父类传递参数，引用类型的属性会被所有实例共享</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCx'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Json'</span>)<br><br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br></code></pre></td></tr></table></figure>
+<p>你会发现，当我们给 person1 增加一个喜欢的运动时，我们打印出 person2 喜欢的运动，这时候 person2 的喜欢运动中也增加了这个运动。这个属性会被所有的实例共享。</p>
+<h3 id="2、构造函数继承"><a href="#2、构造函数继承" class="headerlink" title="2、构造函数继承"></a>2、构造函数继承</h3><ul>
+<li>原理：子类构造函数内部调用父类构造函数，并传入this<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'LiLy'</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Uncaught TypeError: person1.getName is not a function</span><br></code></pre></td></tr></table></figure>
+这次，我们通过 call 方法，可以给父类传参啦，并且我们给 person1 增加一项喜欢的运动，person2 不会也被加上啦。<br>但是我们发现，我们创建的实例并不能调用父类的方法了，会报错，这是因为我们现在用的构造函数方式导致父类并不在子类的原型链上，所以子类无法调用父类的方法。</li>
+</ul>
+<h3 id="3、组合继承"><a href="#3、组合继承" class="headerlink" title="3、组合继承"></a>3、组合继承</h3><ul>
+<li>原理：结合了前两个方法的优点</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name, age</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>  <span class="hljs-keyword">this</span>.age = age<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br>Child.prototype.constructor = Child<br>Child.prototype.getAge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.age<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>, <span class="hljs-number">18</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lily'</span>, <span class="hljs-number">20</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getAge()) <span class="hljs-comment">// 18</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Lucy</span><br></code></pre></td></tr></table></figure>
+<p>这样我们解决了传参的问题，引用类型的属性共享的问题，还有调用父类原型上的方法的问题都解决了。<br>但是现在还有一个不足之处，在给 Child 原型赋值的时候都会执行一次父类构造函数，所以无论什么情况下都会调用两次父类构造函数</p>
+<h3 id="4、寄生组合继承"><a href="#4、寄生组合继承" class="headerlink" title="4、寄生组合继承"></a>4、寄生组合继承</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inheritProtype</span>(<span class="hljs-params">child,parent</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> prototype = <span class="hljs-built_in">Object</span>.create(parent.prototype);<span class="hljs-comment">// 创建对象</span><br>    prototype.constructor = child;<br>    child.prototype = prototype<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>) </span>&#123;<br>    <span class="hljs-keyword">this</span>.name = name<br>&#125;<br>Parent.prototype.sayName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'My name is'</span>+<span class="hljs-keyword">this</span>.name)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name,age</span>)</span>&#123;<br>    Parent.call(<span class="hljs-keyword">this</span>,name);<br>    <span class="hljs-keyword">this</span>.age = age;<br>&#125;<br>inheritProtype(Child,Parent);<br>Child.prototype.sayAge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'My age is'</span>+<span class="hljs-keyword">this</span>.age)<br>&#125; <br><br><span class="hljs-keyword">var</span> child1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Keven'</span>,<span class="hljs-number">13</span>);<br><span class="hljs-keyword">var</span> child2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>,<span class="hljs-number">15</span>);<br>child1.sayName();<br>child2.sayName();<br></code></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>JS基础</category>
       </categories>
@@ -342,6 +357,18 @@
 <li><p>在IE浏览器中，我们的原型模式也是同样的原理，但是IE浏览器怕你通过<code>__proto__</code>把公有的修改，禁止我们使用<code>__proto__</code>。</p>
 </li>
 </ul>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浏览器渲染整个页面的过程</title>
+    <url>/blog/2020/05/23/render/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;首先在地址栏中输入 url 地址，浏览器先查找自己本地的 DNS 记录找到对应的 IP 地址，如果本地没有找到就去 DNS服务器上查找，获取 IP 地址后开始建立 TCP 连接遵循三次握手就可以获取数据，浏览器开始解析 Html 构建 DOM 树，并行请求 css/image/js，CSS 文件下载完成，开始构建 CSS 树，CSS 树构建完成后和 DOM 树一起生成渲染树，计算出每个节点在屏幕中的位置，通过显卡把页面画到屏幕上。</p>
 ]]></content>
       <categories>
         <category>JS基础</category>
@@ -473,33 +500,6 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>); <span class="hljs-comment">// "[object String]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call([]); <span class="hljs-comment">// "[object Array]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;); <span class="hljs-comment">// "[object Function]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">111</span>); <span class="hljs-comment">// "[object Number]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>); <span class="hljs-comment">//"[object Null]"</span><br></code></pre></td></tr></table></figure>
 
 ]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>js中的继承</title>
-    <url>/blog/2020/09/25/inherit/</url>
-    <content><![CDATA[<h3 id="1、原型链继承"><a href="#1、原型链继承" class="headerlink" title="1、原型链继承"></a>1、原型链继承</h3><ul>
-<li>原理：原型链对象变成父类的实例，子类就可以调用父类的方法和属性（利用原型让一个引用类型继承另一个引用类型的属性和方法）<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123; &#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> child = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCi'</span>)<br><br><span class="hljs-built_in">console</span>.log(child.age) <span class="hljs-comment">// 13</span><br><span class="hljs-built_in">console</span>.log(child.getName()) <span class="hljs-comment">// 'AmilyCi'</span><br></code></pre></td></tr></table></figure></li>
-<li>优点：实现起来简单</li>
-<li>缺点：不能向父类传递参数，引用类型的属性会被所有实例共享</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCx'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Json'</span>)<br><br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br></code></pre></td></tr></table></figure>
-<p>你会发现，当我们给 person1 增加一个喜欢的运动时，我们打印出 person2 喜欢的运动，这时候 person2 的喜欢运动中也增加了这个运动。这个属性会被所有的实例共享。</p>
-<h3 id="2、构造函数继承"><a href="#2、构造函数继承" class="headerlink" title="2、构造函数继承"></a>2、构造函数继承</h3><ul>
-<li>原理：子类构造函数内部调用父类构造函数，并传入this<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'LiLy'</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Uncaught TypeError: person1.getName is not a function</span><br></code></pre></td></tr></table></figure>
-这次，我们通过 call 方法，可以给父类传参啦，并且我们给 person1 增加一项喜欢的运动，person2 不会也被加上啦。<br>但是我们发现，我们创建的实例并不能调用父类的方法了，会报错，这是因为我们现在用的构造函数方式导致父类并不在子类的原型链上，所以子类无法调用父类的方法。</li>
-</ul>
-<h3 id="3、组合继承"><a href="#3、组合继承" class="headerlink" title="3、组合继承"></a>3、组合继承</h3><ul>
-<li>原理：结合了前两个方法的优点</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name, age</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>  <span class="hljs-keyword">this</span>.age = age<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br>Child.prototype.constructor = Child<br>Child.prototype.getAge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.age<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>, <span class="hljs-number">18</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lily'</span>, <span class="hljs-number">20</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getAge()) <span class="hljs-comment">// 18</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Lucy</span><br></code></pre></td></tr></table></figure>
-<p>这样我们解决了传参的问题，引用类型的属性共享的问题，还有调用父类原型上的方法的问题都解决了。<br>但是现在还有一个不足之处，在给 Child 原型赋值的时候都会执行一次父类构造函数，所以无论什么情况下都会调用两次父类构造函数</p>
-<h3 id="4、原型式继承"><a href="#4、原型式继承" class="headerlink" title="4、原型式继承"></a>4、原型式继承</h3>]]></content>
       <categories>
         <category>JS基础</category>
       </categories>
