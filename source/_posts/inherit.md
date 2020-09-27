@@ -120,4 +120,31 @@ console.log(person1.getName()) // Lucy
 这样我们解决了传参的问题，引用类型的属性共享的问题，还有调用父类原型上的方法的问题都解决了。
 但是现在还有一个不足之处，在给 Child 原型赋值的时候都会执行一次父类构造函数，所以无论什么情况下都会调用两次父类构造函数
 
-### 4、原型式继承
+### 4、寄生组合继承
+
+```js
+function inheritProtype(child,parent) {
+    var prototype = Object.create(parent.prototype);// 创建对象
+    prototype.constructor = child;
+    child.prototype = prototype
+}
+function Parent(name) {
+    this.name = name
+}
+Parent.prototype.sayName = function(){
+    console.log('My name is'+this.name)
+}
+function Child(name,age){
+    Parent.call(this,name);
+    this.age = age;
+}
+inheritProtype(Child,Parent);
+Child.prototype.sayAge = function(){
+    console.log('My age is'+this.age)
+} 
+
+var child1 = new Child('Keven',13);
+var child2 = new Child('Lucy',15);
+child1.sayName();
+child2.sayName();
+```
