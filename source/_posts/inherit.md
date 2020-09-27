@@ -122,29 +122,78 @@ console.log(person1.getName()) // Lucy
 
 ### 4、寄生组合继承
 
+- 原理：首先用一个空对象建立和父类的关系，再用这个空对象作为子类的原型对象
+
 ```js
 function inheritProtype(child,parent) {
     var prototype = Object.create(parent.prototype);// 创建对象
     prototype.constructor = child;
     child.prototype = prototype
 }
+
 function Parent(name) {
     this.name = name
+    this.likeSports = ['badminton', 'basketball', 'swimming']
 }
-Parent.prototype.sayName = function(){
-    console.log('My name is'+this.name)
+
+Parent.prototype.getName = function(){
+    return this.name
 }
+
 function Child(name,age){
     Parent.call(this,name);
     this.age = age;
 }
 inheritProtype(Child,Parent);
-Child.prototype.sayAge = function(){
-    console.log('My age is'+this.age)
+
+Child.prototype.getAge = function(){
+  return this.age
 } 
 
-var child1 = new Child('Keven',13);
-var child2 = new Child('Lucy',15);
-child1.sayName();
-child2.sayName();
+let person1 = new Child('Keven',13);
+let person2 = new Child('Lucy',15);
+
+person1.likeSports.push('shopping')
+
+console.log(person1.likeSports) // ["badminton", "basketball", "swimming", "shopping"]
+console.log(person2.likeSports) // ["badminton", "basketball", "swimming"]
+console.log(person1.name) // "Keven"
+console.log(person1.getName()) // Keven
+console.log(person1.getAge()) // 13
+```
+解决父类被调用两次的情况，这是最常用的方式
+
+### 5、class继承
+
+- ES6为我们提供了 class、 extends 关键字可以轻松的实现上面那种继承方式
+```js
+class Parent {
+  constructor(name, age){
+    this.name = name
+    this.age = age
+    this.likeSports = ['badminton', 'basketball', 'swimming']
+  }
+  getName(){
+    return this.name
+  }
+  getAge(){
+    return this.age
+  }
+}
+class Child extends Parent{
+  constructor(name, age){
+    super(name,age)
+  }
+}
+
+let person1 = new Child('Lucy', 28)
+let person2 = new Child('Lily', 30)
+
+person1.likeSports.push('shopping')
+
+console.log(person1.likeSports) // ["badminton", "basketball", "swimming", "shopping"]
+console.log(person2.likeSports) // ["badminton", "basketball", "swimming"]
+console.log(person1.name) // Lucy
+console.log(person1.getName()) // Lucy
+console.log(person2.getAge()) // 30
 ```
