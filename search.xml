@@ -53,348 +53,6 @@
       </tags>
   </entry>
   <entry>
-    <title>前端跨域解决方案</title>
-    <url>/blog/2020/05/27/hello-world/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
-<h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
-<li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
-服务端<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
-页面显示<img src="/blog/2020/05/28/hello-world/result.png" class=""></li>
-<li>优点<ul>
-<li>JSONP 使用简单且兼容性不错</li>
-</ul>
-</li>
-<li>缺点<ul>
-<li>只限于 get 请求（即只读）</li>
-<li>它只支持跨域HTTP这种情况</li>
-<li>jsonp在调用失败的时候，不会返回各种HTTP状态码（jsonp的错误处理机制并不完善，我们没办法进行错误处理）</li>
-<li>需要客户端和服务端定制进行开发，服务端返回的数据不是标准的json数据，而是callback包裹的数据</li>
-<li>JSONP只会发一次请求</li>
-</ul>
-</li>
-</ul>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发中可能会遇到多个JSONP请求的回调函数名是相同的，这时候就需要自己封装一个JSONP，下面是实现的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, jsonpCallback, success</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'script'</span>)<br>    script.src = url<br>    script.async = <span class="hljs-literal">true</span><br>    script.type = <span class="hljs-string">'text/javascript'</span><br>    <span class="hljs-built_in">window</span>[jsonpCallback] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>&#123;<br>        success &amp;&amp; success(data)<br>    &#125;<br>    <span class="hljs-built_in">document</span>.body.appendChild(script)<br>&#125;<br>jsonp(<span class="hljs-string">'http://127.0.0.1:8888/get/jsonp'</span>, <span class="hljs-string">'callback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(value)<br>&#125;)<br></code></pre></td></tr></table></figure>
-
-<h3 id="2、CORS"><a href="#2、CORS" class="headerlink" title="2、CORS"></a>2、CORS</h3><ul>
-<li>原理：服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。</li>
-</ul>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;虽然设置 CORS和前端没什么关系，但是通过这种方式解决跨域问题的话，会在发送请求时出现两种情况，分别为简单请求和复杂请求</p>
-<h4 id="简单请求"><a href="#简单请求" class="headerlink" title="简单请求"></a>简单请求</h4><p>1、使用下列方法之一：</p>
-<ul>
-<li>GET</li>
-<li>HEAD</li>
-<li>POST</li>
-</ul>
-<p>2、HTTP头信息不超出以下几种字段：</p>
-<ul>
-<li>Accept</li>
-<li>Accept-Language</li>
-<li>Content-Language</li>
-<li>Last-Event-ID</li>
-<li>Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain</li>
-</ul>
-<h4 id="复杂请求"><a href="#复杂请求" class="headerlink" title="复杂请求"></a>复杂请求</h4><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。</p>
-<ul>
-<li>优点：<ul>
-<li>CORS支持所有的浏览器请求类型，承载的请求数据量更大，开放更简洁，服务端只需要将处理后的数据直接返回，不需要再特殊处理。</li>
-<li>CORS可以通过onerror事件监听错误，并且浏览器控制台会看到报错信息，利于排查。</li>
-</ul>
-</li>
-</ul>
-<h3 id="3、document-domain"><a href="#3、document-domain" class="headerlink" title="3、document.domain"></a>3、document.domain</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;该方法只能用于主域名相同的情况下,比如<code>a.test.com</code> 和 <code>b.test.com</code>,只需要给页面添加<code>document.domain = &#39;test.com&#39;</code>就可以实现跨域。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;比如我们可以打开 <a href="https://id.qq.com/login/ptlogin.html" target="_blank" rel="noopener">id.qq.com</a>，调出控制台，输入<code>let w = window.open(&#39;http://www.qq.com&#39;)</code>，之后访问<code>w.document</code>，发现控制台会报出跨域相关的错误。这时我们再在控制台中输入<code>document.domain = &#39;qq.com&#39;</code>，再访问<code>w.document</code>，这样就可以了。</p>
-{% asset_img jt.png  %}
-<ul>
-<li>注意：两个域名的主域名必须相同，并且所有的协议、端口都要一致，否则无法利用document.domain进行跨域。</li>
-</ul>
-<h3 id="4、postMessage"><a href="#4、postMessage" class="headerlink" title="4、postMessage"></a>4、postMessage</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这种方式一般会用在iframe嵌入其他页面时需要通信的情况下，只要正确的使用，这种方法很安全。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"iframe"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://test.com"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 发送端</span><br><span class="hljs-keyword">const</span> iframe = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'iframe);</span><br><span class="hljs-string">iframe.contentWindow.postMessage('</span>&#123;<span class="hljs-string">"method"</span>:<span class="hljs-string">"closeWindows"</span>&#125;<span class="hljs-string">', "http://test.com")</span><br></code></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//接收端</span><br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(e.data)<br>&#125;, <span class="hljs-literal">false</span>)<br></code></pre></td></tr></table></figure>
-<ul>
-<li>注意：<ul>
-<li>当使用postMessage将数据发送到其他窗口时，始终指定精确的目标origin，而不是*。 恶意网站可以在您不知情的情况下更改窗口的位置，因此它可以拦截使用postMessage发送的数据。</li>
-<li>如果不希望从其他网站接收message，不要为message事件添加任何事件侦听器，这是一个完全万无一失的方式来避免安全问题。</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>前端技术</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>http和https</title>
-    <url>/blog/2020/05/20/http/</url>
-    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 协议的全称为<code>超文本传输协议</code>。http 是以明文的方式发送内容，不提供任何方式的数据加密，因此 http 不适合传输敏感信息。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 默认工作在TCP协议 80 端口。</p>
-<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 协议的全称为<code>超文本传输安全协议</code>。它是为了解决 http 传输不安全而诞生的。https 在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 默认工作在 TCP 协议 443 端口。</p>
-<h3 id="https与http的区别"><a href="#https与http的区别" class="headerlink" title="https与http的区别"></a>https与http的区别</h3><ul>
-<li>http 是明文传输，数据都是未加密的，安全性较差，https 数据传输的过程是加密的，安全性好。</li>
-<li>https 协议需要到CA申请证书，免费的证书比较少，所以需要一定的费用</li>
-<li>http 页面响应速度比 https 快，因为 http 使用 TCP 三次握手建立连接，客户端和服务器需要交换3个包，https 除了 TCP 的三个包，还需要加上ssl握手需要的9个包，一共是12个包。</li>
-<li>https 和 http 使用的是完全不同的连接方式，用的端口也不一样，http 用的是 80 端口，https 用的是 443 端口。</li>
-<li>https 其实就是建构在 SSL/TLS 之上的 http 协议，所以 https 比 http 要更耗费服务器资源。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>网络基础</category>
-      </categories>
-      <tags>
-        <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>原型和原型链</title>
-    <url>/blog/2020/05/23/prototype/</url>
-    <content><![CDATA[<h3 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h3><ul>
-<li><p>每一个函数数据类型（普通函数、类）都有一个天生自带的属性：prototype（原型），并且这个属性是一个对象数据类型的值；并且在 prototype 上浏览器天生给它加了一个属性 constructor（构造函数），属性值是当前函数（类）本身；每一个对象数据类型（普通的对象、实例、prototype…）也天生自带一个属性：<code>__proto__</code>,属性值是当前实例所属类的原型（prototype）。</p>
-</li>
-<li><p>Object 是 JS 中所有对象数据类型的基类（最顶层的类），在 Object.prototype 上<code>__proto__</code>这个属性为空，会返回 null。</p>
-</li>
-</ul>
-<h3 id="原型链"><a href="#原型链" class="headerlink" title="原型链"></a>原型链</h3><ul>
-<li><p>通过 对象名.属性名 的方式获取属性值的时候，首先在对象的私有属性上进行查找，如果私有中存在这个属性，则获取的是私有的属性值；如果私有的没有，则通过<code>__proto__</code>找到所属类的原型（类的原型上定义的属性和方法都是当前实例公有的属性和方法），原型上存在的话，获取的是公有属性值；如果原型上也没有，则继续通过原型上的<code>__proto__</code>继续向上查找，一直找到 Object.prototype 为止…，这种查找机制就是我们的“原型链模式”。</p>
-</li>
-<li><p>在IE浏览器中，我们的原型模式也是同样的原理，但是IE浏览器怕你通过<code>__proto__</code>把公有的修改，禁止我们使用<code>__proto__</code>。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>检测数据类型的几种方式</title>
-    <url>/blog/2020/05/23/typeof/</url>
-    <content><![CDATA[<h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><ul>
-<li><p>typeof 检测基本数据类型，除了 null 以外其它的都可以检测出来，typeof(null) 返回的结果是 “object”。</p>
-</li>
-<li><p>typeof 检测引用数据类型，除了函数以外其它返回的结果都是 “object”。</p>
-</li>
-<li><p>使用 typeof 检测数据类型，返回的结果是字符串包含着对应的数据类型。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">typeof</span>(<span class="hljs-literal">null</span>); <span class="hljs-comment">// "object"</span><br><br><span class="hljs-keyword">typeof</span>(<span class="hljs-string">"2"</span>); <span class="hljs-comment">// "string"</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><ul>
-<li><p>instanceof 检测某一个实例是否属于某个类。</p>
-</li>
-<li><p>不能用来检测和处理字面量方式创建出来的基本数据类型值。</p>
-</li>
-<li><p>instanceof 的特性：只要在当前实例的原型链上，我们用其检测出来的结果都是true。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>()<br><br>obj <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><ul>
-<li><p>作用和 instanceof 非常的相似。</p>
-</li>
-<li><p>constructor 可以处理基本数据类型的检测。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> a = <span class="hljs-number">111</span>;<br><span class="hljs-keyword">const</span> b = &#123;&#125;;<br>a.constructor === <span class="hljs-built_in">Number</span>; <span class="hljs-comment">// true</span><br>b.constructor === <span class="hljs-built_in">Object</span>; <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><ul>
-<li><p>最准确常用的方式。</p>
-</li>
-<li><p>第一个object代表当前实例是对象数据类型的（这个是固定死的）第二个Object，代表的是obj所属的类是Object。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>); <span class="hljs-comment">// "[object String]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call([]); <span class="hljs-comment">// "[object Array]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;); <span class="hljs-comment">// "[object Function]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">111</span>); <span class="hljs-comment">// "[object Number]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>); <span class="hljs-comment">//"[object Null]"</span><br></code></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HTTP状态码</title>
-    <url>/blog/2020/05/20/statusCode/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;状态码的职责是当客户端向服务器端发送请求时，描述返回的请求结果。</p>
-<ul>
-<li>2XX 成功<ul>
-<li>200 OK：表示从客户端发来的请求在服务器端被正常处理了。</li>
-<li>204 No Content：表示服务器接收的请求已成功处理，但在返回的响应报文中 不含实体的主体部分。另外，也不允许返回任何实体的主体。</li>
-<li>206 Partial Content：表示客户端进行了范围请求，而服务器成功执行了这部分的 GET 请求。</li>
-</ul>
-</li>
-<li>3XX 重定向<ul>
-<li>301 Moved Permanently：永久性重定向。表示请求的资源已被分配了新的 URI，以后 应使用资源现在所指的 URI。</li>
-<li>302 Found：临时性重定向。表示请求的资源已被分配了新的 URI，希望 用户(本次)能使用新的 URI 访问。</li>
-<li>303 See Other：表示由于请求对应的资源存在着另一个 URI，应使用 GET 方法定向获取请求的资源。</li>
-<li>304 Not Modified：表示客户端发送附带条件的请求时，服务器端允许请求访 问资源，但未满足条件的情况。</li>
-<li>307 Temporary Redirect：临时重定向。该状态码与 302 Found 有着相同的含义。</li>
-</ul>
-</li>
-<li>4XX 客户端错误<ul>
-<li>400 Bad Request：表示请求报文中存在语法错误。</li>
-<li>401 Unauthorized：表示发送的请求需要有通过 HTTP 认证(BASIC 认证、 DIGEST 认证)的认证信息。另外若之前已进行过 1 次请求，则表示 用 户认证失败。</li>
-<li>403 Forbidden：表示对请求资源的访问被服务器拒绝了。</li>
-<li>404 Not Found：表示服务器上无法找到请求的资源。</li>
-</ul>
-</li>
-<li>5XX 服务器错误<ul>
-<li>500 Internal Server Error：表示服务器端在执行请求时发生了错误。</li>
-<li>503 Service Unavailable：表示服务器暂时处于超负载或正在进行停机维护，现在无法 处理请求。</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>网络基础</category>
-      </categories>
-      <tags>
-        <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Webpack基础入门02</title>
-    <url>/blog/2020/05/19/webpack02/</url>
-    <content><![CDATA[<h3 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack 可以配置两种环境模式，即：<code>开发环境</code>和<code>生产环境</code>。开发环境是 能让代码本地调试运行的环境，生产环境是 能让代码优化上线运行的环境。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们写的源代码里面包含了 es6 语法, less 文件要经过webpack进行编译处理,比如将 less 文件编译成 css 文件，把 es6 语法编译成浏览器能够识别的语法，然后输出的 bundle 这个资源文件就可以被浏览器运行了，为了让开发者更轻松，这里还添加了一些自动化工作，比如自动打开浏览器，自动刷新，自动编译等等一些咧操作，让我们的效率更高，这就是开发环境所做的事情。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们的样式在之前处理是整合到js中的，如果让样式在 js 中，会让 js 体积变得很大，下载的很慢，同时，这里会先加载js，再通过创建<code>&lt;style&gt;</code>标签，会出现闪屏的现象，所以我们要将css从js文件中提取出来，还有代码压缩，兼容性处理都可以让带吗更快，性能更好，能够平稳的运行，这样我们要做的事情会很多，如果把这些都放在开发环境下，那开发环境要做的事情就太多了，打包速度就会很慢，不利于我们开发，所以这些事情我们要放在生产环境上去做。</p>
-<h3 id="提取css成单独文件"><a href="#提取css成单独文件" class="headerlink" title="提取css成单独文件"></a>提取css成单独文件</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这里需要用到一个新的插件 <code>miniCssExtractPlugin</code>，引用这个插件之后打包出来的样式是以 <code>&lt;link&gt;</code>  引入，而不是 <code>&lt;style&gt;</code> 标签，所以不会出现闪屏现象，并且 css 文件和 js 文件分割开了，js 文件的体积也没有那么大，解析速度会更好一些。</p>
-<p>webpack.config.js</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    <span class="hljs-comment">// 创建style标签，将样式放入</span><br>                    <span class="hljs-comment">// 'style-loader', </span><br>                    <span class="hljs-comment">// 这个loader取代style-loader。作用：提取js中的css成单独文件</span><br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-comment">// 将css整合到js文件中</span><br>                    <span class="hljs-string">'css-loader'</span><br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            <span class="hljs-comment">// 对输出的css文件进行重命名</span><br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>目录文件</p>
-{% asset_img catalogue.jpeg  %}
-
-<p>打包输出的 index.html 文件</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width, initial-scale=1.0"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"css/built.css"</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"js/built.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="css的兼容性处理"><a href="#css的兼容性处理" class="headerlink" title="css的兼容性处理"></a>css的兼容性处理</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;有时我们写的 css 样式并不是在所有的浏览器上都兼容，而 webpack 的 postcss-loader 会帮助我们解决这个问题。</p>
-<p>webpack.config.js</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><br><span class="hljs-comment">// 设置nodejs环境变量</span><br>process.env.NODE_ENV = <span class="hljs-string">'development'</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-comment">// 这种写法是使用loader的默认配置</span><br>                    <span class="hljs-string">'css-loader'</span>,<br>                    <span class="hljs-comment">/*</span><br><span class="hljs-comment">                        css兼容性处理：postcss --&gt; postcss-loader postcss-preset-env，下载这两个包</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">                        postcss-preset-env插件帮postcss找到package.json中 browserslist 里面的配置，通过配置加载指定的css兼容性样式</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">                        “browserslist”:&#123;</span><br><span class="hljs-comment">                            开发环境 --&gt; 设置node环境变量 : process.env.NODE_ENV = development</span><br><span class="hljs-comment">                            "development":[</span><br><span class="hljs-comment">                                "last 1 chrome version",</span><br><span class="hljs-comment">                                "last 1 firefox version",</span><br><span class="hljs-comment">                                "last 1 safari version"</span><br><span class="hljs-comment">                            ],</span><br><span class="hljs-comment">                            生产环境：默认是看生产环境</span><br><span class="hljs-comment">                            "production":[</span><br><span class="hljs-comment">                                "&gt;0.2%",</span><br><span class="hljs-comment">                                "not dead",</span><br><span class="hljs-comment">                                "not op_mini all"</span><br><span class="hljs-comment">                            ]</span><br><span class="hljs-comment">                        &#125;</span><br><span class="hljs-comment">                    */</span><br>                   <span class="hljs-comment">// 使用loader的默认配置</span><br>                   <span class="hljs-comment">// "postcss-loader"</span><br>                   <span class="hljs-comment">// 修改loader的配置</span><br>                   &#123;<br>                       loader: <span class="hljs-string">'postcss-loader'</span>,<br>                       options: &#123;<br>                           <span class="hljs-comment">// 固定写法</span><br>                           ident: <span class="hljs-string">'postcss'</span>,<br>                           plugins: <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> [<br>                               <span class="hljs-comment">// postcss插件</span><br>                               <span class="hljs-built_in">require</span>(<span class="hljs-string">'postcss-preset-env'</span>)()<br>                           ]<br>                       &#125;<br>                   &#125;<br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>package.json</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json">&#123;<br>  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"webpack_code"</span>,<br>  <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,<br>  <span class="hljs-attr">"description"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,<br>  <span class="hljs-attr">"scripts"</span>: &#123;<br>    <span class="hljs-attr">"test"</span>: <span class="hljs-string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><br>  &#125;,<br>  <span class="hljs-attr">"author"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"license"</span>: <span class="hljs-string">"ISC"</span>,<br>  <span class="hljs-attr">"devDependencies"</span>: &#123;<br>    <span class="hljs-attr">"css-loader"</span>: <span class="hljs-string">"^3.5.3"</span>,<br>    <span class="hljs-attr">"file-loader"</span>: <span class="hljs-string">"^6.0.0"</span>,<br>    <span class="hljs-attr">"html-loader"</span>: <span class="hljs-string">"^1.1.0"</span>,<br>    <span class="hljs-attr">"html-webpack-plugin"</span>: <span class="hljs-string">"^4.3.0"</span>,<br>    <span class="hljs-attr">"less"</span>: <span class="hljs-string">"^3.11.1"</span>,<br>    <span class="hljs-attr">"less-loader"</span>: <span class="hljs-string">"^6.1.0"</span>,<br>    <span class="hljs-attr">"mini-css-extract-plugin"</span>: <span class="hljs-string">"^0.9.0"</span>,<br>    <span class="hljs-attr">"postcss-loader"</span>: <span class="hljs-string">"^3.0.0"</span>,<br>    <span class="hljs-attr">"postcss-preset-env"</span>: <span class="hljs-string">"^6.7.0"</span>,<br>    <span class="hljs-attr">"style-loader"</span>: <span class="hljs-string">"^1.2.1"</span>,<br>    <span class="hljs-attr">"url-loader"</span>: <span class="hljs-string">"^4.1.0"</span>,<br>    <span class="hljs-attr">"webpack"</span>: <span class="hljs-string">"^4.43.0"</span>,<br>    <span class="hljs-attr">"webpack-cli"</span>: <span class="hljs-string">"^3.3.11"</span>,<br>    <span class="hljs-attr">"webpack-dev-server"</span>: <span class="hljs-string">"^3.11.0"</span><br>  &#125;,<br>  <span class="hljs-attr">"browserslist"</span>:&#123;<br>    <span class="hljs-attr">"development"</span>:[<br>        <span class="hljs-string">"last 1 chrome version"</span>,<br>        <span class="hljs-string">"last 1 firefox version"</span>,<br>        <span class="hljs-string">"last 1 safari version"</span><br>    ],<br>    <span class="hljs-attr">"production"</span>:[<br>        <span class="hljs-string">"&gt;0.2%"</span>,<br>        <span class="hljs-string">"not dead"</span>,<br>        <span class="hljs-string">"not op_mini all"</span><br>    ]<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>a.css</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">background-color</span>: pink;<br>    <span class="hljs-attribute">display</span>: flex;<br>    <span class="hljs-attribute">backface-visibility</span>: hidden;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>打包之后的css文件</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">background-color</span>: pink;<br>    <span class="hljs-attribute">display</span>: flex;<br>    <span class="hljs-attribute">-webkit-backface-visibility</span>: hidden;<br>            <span class="hljs-attribute">backface-visibility</span>: hidden;<br>&#125;<br><span class="hljs-selector-id">#box2</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">200px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;<br>    <span class="hljs-attribute">background-color</span>: deeppink;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="压缩css"><a href="#压缩css" class="headerlink" title="压缩css"></a>压缩css</h3><p>webpack.config.js</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><span class="hljs-keyword">const</span> optimizeCssAssetsWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'optimize-css-assets-webpack-plugin'</span>)<br><br>process.env.NODE_ENV = <span class="hljs-string">'development'</span><br><br><span class="hljs-comment">// optimize-css-assets-webpack-plugin</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-string">'css-loader'</span>,<br>                   &#123;<br>                       loader: <span class="hljs-string">'postcss-loader'</span>,<br>                       options: &#123;<br>                           ident: <span class="hljs-string">'postcss'</span>,<br>                           plugins: <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> [<br>                               <span class="hljs-built_in">require</span>(<span class="hljs-string">'postcss-preset-env'</span>)()<br>                           ]<br>                       &#125;<br>                   &#125;<br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;),<br>        <span class="hljs-comment">// 压缩css</span><br>        <span class="hljs-keyword">new</span> optimizeCssAssetsWebpackPlugin()<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>使用 optimize-css-assets-webpack-plugin 插件就可以压缩css</p>
-]]></content>
-      <categories>
-        <category>前端构建工具</category>
-      </categories>
-      <tags>
-        <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Webpack基础入门01</title>
-    <url>/blog/2020/05/19/webpack/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack是一种前端资源构建工具,一个静态模块打包器。当我们在开发过程中使用一些浏览器并不能识别的语言时，比如：在js文件中使用ES Module语法、使用less语法等等，这时我们就需要一个工具将浏览器不能识别的语法编译成浏览器能够识别的语法，在过去我们会把这些语法通过一个个小工具去编译，这样维护起来会很麻烦，所以前端就提出了一个概念，叫做”构建工具”，构建工具的意思就是找一个大的工具将这些小的工具功能都包含进来，现在我们只要关注这个大工具就可以了。而Webpack就是构建工具的一种。Webpack会根据入口文件的依赖关系，将所有的资源(js/json/css/image/less/…)全部引进来，形成chunk代码块，然后会根据不同的资源进行不同的处理，比如将less编译成css，这个过程叫做打包，打包之后输出出去，输出去的文件我们叫做bundle，所以Webpack还是一个静态模块打包器。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;webpack有五个核心概念，分别是：entry、output、loader、plugins、mode</p>
-<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 全局安装，我们可以使用webpack的相关指令</span><br>npm i webpack webpack-cli -global<br><span class="hljs-comment">// 本地安装</span><br>npm i webpack webpack-cli -D<br></code></pre></td></tr></table></figure>
-<ul>
-<li>运行指令<ul>
-<li>开发环境：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack会以./src/index.js为入口文件开始打包，打包后输出到./build/build.js</span><br>webpack ./src/index.js -o ./build/build.js --mode=development<br></code></pre></td></tr></table></figure></li>
-<li>生产环境：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack会以./src/index.js为入口文件开始打包，打包后输出到./build/build.js</span><br>webpack ./src/index.js -o ./build/build.js --mode=production<br></code></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li>总结：<ul>
-<li>生产环境比开发环境多一个压缩js代码</li>
-<li>webpack能处理js/json，不能处理css/img等其他资源</li>
-<li>生产环境和开发环境将ES6模块化编译成浏览器能识别的模块化</li>
-</ul>
-</li>
-</ul>
-<h3 id="打包资源文件"><a href="#打包资源文件" class="headerlink" title="打包资源文件"></a>打包资源文件</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们可以在根目录下建一个Webpack的配置文件webpack.config.js，用来指示Webpack做哪些事情（当我们运行webpack指令时，会加载里面的配置）<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;所有构建工具都是基于nodejs平台运行的,模块化默认采用commonjs</p>
-<ul>
-<li>打包样式资源（webpack.config.js）<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// resolve用来拼接绝对路径的方法</span><br><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-comment">// webpack配置</span><br>  <span class="hljs-comment">// 入口起点</span><br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  <span class="hljs-comment">// 输出</span><br>  output: &#123;<br>    <span class="hljs-comment">// 输出文件名</span><br>    filname: <span class="hljs-string">'build.js'</span>,<br>    <span class="hljs-comment">// 输出路径</span><br>    <span class="hljs-comment">// __dirname nodejs的变量，代表当前文件的目录绝对路径</span><br>    path: resolve(__diranem,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-comment">// loader的配置</span><br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      <span class="hljs-comment">// 详细loader的配置</span><br>      <span class="hljs-comment">// 不同文件必须配置不同loader处理</span><br>      &#123;<br>        <span class="hljs-comment">// 匹配哪些文件</span><br>        test: <span class="hljs-regexp">/\.css/</span>,<br>        <span class="hljs-comment">// 使用哪些loader进行处理</span><br>        use: [<br>          <span class="hljs-comment">// use数组中loader执行顺序：从右到左，从下到上 依次执行</span><br>          <span class="hljs-comment">// 创建style标签，将js中的样式资源插入进去，添加到head中生效</span><br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-comment">// 将css文件变成commonjs模块加载js中,里面内容是样式字符串</span><br>          <span class="hljs-string">'css-loader'</span><br>        ]<br>      &#125;,<br>      &#123;<br>        test: <span class="hljs-regexp">/\.less/</span>,<br>        use: [<br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-string">'css-loader'</span>,<br>          <span class="hljs-comment">// 将less文件编译成css文件</span><br>          <span class="hljs-comment">// 需要下载less-loader less</span><br>          <span class="hljs-string">'less-loader'</span><br>        ]<br>      &#125;<br>    ]<br>  &#125;,<br>  <span class="hljs-comment">// plugins的配置</span><br>  plugins: [<br>    <span class="hljs-comment">// 详细plugins的配置</span><br>  ],<br>  <span class="hljs-comment">// 模式</span><br>  mode: <span class="hljs-string">'development'</span> <span class="hljs-comment">// 开发模式</span><br>  <span class="hljs-comment">// mode: 'production'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-注：以上都需要下载相应的loader，例如：<code>npm i style-loader css-loader -D</code></li>
-<li>打包html资源<br>打包html需要引入html-webpack-plugin插件<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">import</span> HtmlWebpackPlugin <span class="hljs-keyword">from</span> <span class="hljs-string">'html-webpack-plugin'</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      <span class="hljs-comment">// loader配置</span><br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-comment">// plugins的配置</span><br>    <span class="hljs-comment">// 功能：默认会创建一个空的HTML，自动引入打包输出的所有资源（JS/CSS）</span><br>    <span class="hljs-comment">// 如果需要有结构的html文件，可以通过传参的方式</span><br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      <span class="hljs-comment">// 复制./src/index.html文件，并自动引入打包输出的所有资源（JS/CSS）</span><br>      template: <span class="hljs-string">'./src/index.html</span><br><span class="hljs-string">    &#125;)</span><br><span class="hljs-string">  ],</span><br><span class="hljs-string">  mode: '</span>development<span class="hljs-string">'</span><br><span class="hljs-string">&#125;</span><br></code></pre></td></tr></table></figure></li>
-<li>打包图片资源<br>index.html<figure class="highlight html"><table><tr><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box3"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./01.jpg"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"01"</span>&gt;</span><br></code></pre></td></tr></table></figure>
-index.less<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./01.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br><span class="hljs-selector-id">#box2</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./02.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br><span class="hljs-selector-id">#box3</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./03.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-index.js<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-string">'./index.less'</span><br></code></pre></td></tr></table></figure>
-webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; =  <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.less$/</span>,<br>        <span class="hljs-comment">// 要使用多个loader处理用use</span><br>        use: [<br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-string">'css-loader'</span>,<br>          <span class="hljs-string">'less-loader'</span><br>        ]<br>      &#125;,<br>      &#123;<br>        <span class="hljs-comment">// 处理图片资源</span><br>        <span class="hljs-comment">// 处理不了html中img图片</span><br>        test: <span class="hljs-regexp">/\.(jpg|png|gif)$/</span>,<br>        <span class="hljs-comment">// 使用一个loader</span><br>        <span class="hljs-comment">// 下载 url-loader file-loader</span><br>        loader: <span class="hljs-string">'url-loader'</span>,<br>        options: &#123;<br>          <span class="hljs-comment">// 图片大小小于8kb,就会被base64处理</span><br>          <span class="hljs-comment">// 优点：减少请求数量（减轻服务器压力）</span><br>          <span class="hljs-comment">// 缺点：图片体积会更大（文件请求速度会更慢）</span><br>          limit: <span class="hljs-number">8</span> * <span class="hljs-number">1024</span>,<br>          <span class="hljs-comment">// 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs</span><br>          <span class="hljs-comment">// 解析时会出问题：[object Module]</span><br>          <span class="hljs-comment">// 解决：关闭url-loader的es6模块化，使用commonjs解析</span><br>          <span class="hljs-comment">// 注：目前新版本不会有这个问题</span><br>          esModule: <span class="hljs-literal">false</span>,<br>          <span class="hljs-comment">// 给图片进行重命名</span><br>          <span class="hljs-comment">// [hash:10]取图片的hash的前10位</span><br>          <span class="hljs-comment">// [ext]取文件原来扩展名</span><br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;,<br>      &#123;<br>        test: <span class="hljs-regexp">/\.html$/</span>,<br>        <span class="hljs-comment">// 处理html文件的img图片（负责引入img，从而能被url-loader进行处理）</span><br>        loader: <span class="hljs-string">'html-loader'</span><br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-最新版本已经优化了url-loader，不会出现在html文件中直接引入图片解析时显示[object Module]这个问题</li>
-<li>打包其他资源<br>其他资源一般指除了html、css、js以外的资源，比如说字体文件资源<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123;resolve&#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.css$/</span>,<br>        use: [<span class="hljs-string">'style-loader'</span>,<span class="hljs-string">'css-loader'</span>]<br>      &#125;,<br>      <span class="hljs-comment">// 打包其他资源（除了html/js/css资源以外的其他资源）</span><br>      &#123;<br>        <span class="hljs-comment">// 排除html/js/css资源</span><br>        exclude: <span class="hljs-regexp">/\.(html|js|css)$/</span>,<br>        loader: <span class="hljs-string">'file-loader'</span>,<br>        options: &#123;<br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="devServer"><a href="#devServer" class="headerlink" title="devServer"></a>devServer</h3>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;devServer用来自动化(自动编译，自动打开浏览器，自动刷新浏览器)，只会在内存中编译打包，不会有任何输出。<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123;resolve&#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.css$/</span>,<br>        use: [<span class="hljs-string">'style-loader'</span>,<span class="hljs-string">'css-loader'</span>]<br>      &#125;,<br>      <span class="hljs-comment">// 打包其他资源（除了html/js/css资源以外的其他资源）</span><br>      &#123;<br>        <span class="hljs-comment">// 排除html/js/css资源</span><br>        exclude: <span class="hljs-regexp">/\.(html|js|css)$/</span>,<br>        loader: <span class="hljs-string">'file-loader'</span>,<br>        options: &#123;<br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span>,<br>  devServer: &#123;<br>    <span class="hljs-comment">// 项目构建后路径</span><br>    contentBase: resolve(__dirname,<span class="hljs-string">'build'</span>),<br>    <span class="hljs-comment">// 启动gzip压缩</span><br>    compress: <span class="hljs-literal">true</span>,<br>    <span class="hljs-comment">// 端口号</span><br>    port: <span class="hljs-number">3000</span>,<br>    <span class="hljs-comment">// 自动打开默认浏览器</span><br>    open: <span class="hljs-literal">true</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在运行前需要安装webpack-dev-server包，指令为<code>npm i webpack-dev-server -D</code>，启动devServer指令为：<code>npx webpack-dev-server</code>，由于我们没有全局安装webpack-dev-server，所以要在前面加一个npx。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;webpack指令会将打包结果输出出去，npx webpack-dev-server指令只会在内存中编译打包，没有输出。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>前端构建工具</category>
-      </categories>
-      <tags>
-        <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>call、apply、bind</title>
-    <url>/blog/2020/05/23/call/</url>
-    <content><![CDATA[<h3 id="三者之间的区别"><a href="#三者之间的区别" class="headerlink" title="三者之间的区别"></a>三者之间的区别</h3><ul>
-<li><p>call、apply、bind 都是用来改变 this 关键字的。</p>
-</li>
-<li><p>call 和 apply 的用法是一样的，只不过在传参的时候，call 是一个一个的传，而 apply 是放在一个数组中传递。</p>
-</li>
-<li><p>bind 方法在 IE6~8 下不兼容，在 call 和 apply 中改变 this 关键字和执行 fn 一起完成了，而在 bind 中只是改变了 this 关键字并且传参，但是 fn 并没有执行，执行 bind 会有一个返回值，而这个返回值就是我们把 fn 的 this 改变后的那个结果，所以 bind 只是对 fn 进行了预处理</p>
-</li>
-</ul>
-<h3 id="实现call"><a href="#实现call" class="headerlink" title="实现call"></a>实现call</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myCall = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;  <span class="hljs-comment">// 在函数的原型上绑定一个我们自定义的函数</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;  <span class="hljs-comment">// 如果调用这个方法不是函数数据类型，那么就抛出一个错误</span><br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 防止对象上有fn这个属性，被我们覆盖</span><br>  context[fn] = <span class="hljs-keyword">this</span>  <span class="hljs-comment">// 把函数作为对象的一个属性</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 获取传进来的参数</span><br>  <span class="hljs-keyword">const</span> result = context[fn](...args)  <span class="hljs-comment">// 将参数传入对象这个函数中，并执行返回结果</span><br>  <span class="hljs-keyword">delete</span> context[fn]  <span class="hljs-comment">// 删除对象这个函数属性</span><br>  <span class="hljs-keyword">return</span> result   <span class="hljs-comment">// 返回结果</span><br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayHi</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> sum = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Hi,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;sum&#125;</span>`</span><br>&#125;<br><br>sayHi.myCall(user,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)  <span class="hljs-comment">// "Hi,John,3"</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="实现apply"><a href="#实现apply" class="headerlink" title="实现apply"></a>实现apply</h2><ul>
-<li>apply 的实现方法其实和 call 基本一样，唯一的区别就是在传参时的处理，下面我们就看一下 apply 的实现大体思路</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myApply = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)<br>  context[fn] = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">let</span> result<br>  <span class="hljs-comment">// 在处理参数上和 call 有一些区别</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])&#123;<br>    result = context[fn](...arguments[<span class="hljs-number">1</span>])<br>  &#125;<span class="hljs-keyword">else</span> &#123;<br>    result = context[fn]()<br>  &#125;<br>  <span class="hljs-keyword">delete</span> context[fn]<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Alice'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayBye</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">const</span> num = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Bye,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;num&#125;</span>`</span><br>&#125;<br><br>sayBye.myApply(user,[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])  <span class="hljs-comment">// "Bye,Alice,5"</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="实现Bind"><a href="#实现Bind" class="headerlink" title="实现Bind"></a>实现Bind</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myBind = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  <span class="hljs-keyword">const</span> _this = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">F</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-comment">// 如果被当做构造函数调用</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> F)&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> _this(...args, ...arguments)<br>    &#125;<br>    <span class="hljs-keyword">return</span> _this.apply(context, args.concat(...arguments))<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">other</span>(<span class="hljs-params">age, birthday</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-keyword">this</span>.birthday = birthday<br>&#125;<br><br><span class="hljs-keyword">const</span> detail = other.myBind(user,<span class="hljs-number">18</span>)<br>detail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy", age: 18, birthday: 2020&#125;</span><br><br><span class="hljs-keyword">const</span> newDetail = other.myBind(user, <span class="hljs-number">17</span>)<br><span class="hljs-keyword">const</span> detail2 = <span class="hljs-keyword">new</span> newDetail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy"&#125;</span><br><span class="hljs-built_in">console</span>.log(detail2) <span class="hljs-comment">// &#123;age: 17, birthday: 2020&#125;</span><br></code></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>浏览器渲染整个页面的过程</title>
-    <url>/blog/2020/05/23/render/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;首先在地址栏中输入 url 地址，浏览器先查找自己本地的 DNS 记录找到对应的 IP 地址，如果本地没有找到就去 DNS服务器上查找，获取 IP 地址后开始建立 TCP 连接遵循三次握手就可以获取数据，浏览器开始解析 Html 构建 DOM 树，并行请求 css/image/js，CSS 文件下载完成，开始构建 CSS 树，CSS 树构建完成后和 DOM 树一起生成渲染树，计算出每个节点在屏幕中的位置，通过显卡把页面画到屏幕上。</p>
-]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>this</title>
-    <url>/blog/2020/05/23/this/</url>
-    <content><![CDATA[<ul>
-<li><p>在构造函数中，this 指向 new 出来的实例本身。</p>
-</li>
-<li><p>在事件中，this 指向触发这个事件的对象。</p>
-</li>
-<li><p>this 指向函数的直接调用者。</p>
-</li>
-<li><p>自执行函数中的 this 永远都是 window。</p>
-</li>
-<li><p>函数执行，首先看函数前面是否有”.”，有的话，”.”前面是谁 this 就是谁，没有的话，this 就是 window。</p>
-</li>
-<li><p>箭头函数中的 this 取决于包裹箭头函数的第一个普通函数 this。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数组中常用的方法</title>
     <url>/blog/2020/05/23/arry/</url>
     <content><![CDATA[<h3 id="1、push"><a href="#1、push" class="headerlink" title="1、push()"></a>1、push()</h3><ul>
@@ -510,6 +168,424 @@ webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><
       </tags>
   </entry>
   <entry>
+    <title>call、apply、bind</title>
+    <url>/blog/2020/05/23/call/</url>
+    <content><![CDATA[<h3 id="三者之间的区别"><a href="#三者之间的区别" class="headerlink" title="三者之间的区别"></a>三者之间的区别</h3><ul>
+<li><p>call、apply、bind 都是用来改变 this 关键字的。</p>
+</li>
+<li><p>call 和 apply 的用法是一样的，只不过在传参的时候，call 是一个一个的传，而 apply 是放在一个数组中传递。</p>
+</li>
+<li><p>bind 方法在 IE6~8 下不兼容，在 call 和 apply 中改变 this 关键字和执行 fn 一起完成了，而在 bind 中只是改变了 this 关键字并且传参，但是 fn 并没有执行，执行 bind 会有一个返回值，而这个返回值就是我们把 fn 的 this 改变后的那个结果，所以 bind 只是对 fn 进行了预处理</p>
+</li>
+</ul>
+<h3 id="实现call"><a href="#实现call" class="headerlink" title="实现call"></a>实现call</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myCall = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;  <span class="hljs-comment">// 在函数的原型上绑定一个我们自定义的函数</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;  <span class="hljs-comment">// 如果调用这个方法不是函数数据类型，那么就抛出一个错误</span><br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 防止对象上有fn这个属性，被我们覆盖</span><br>  context[fn] = <span class="hljs-keyword">this</span>  <span class="hljs-comment">// 把函数作为对象的一个属性</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 获取传进来的参数</span><br>  <span class="hljs-keyword">const</span> result = context[fn](...args)  <span class="hljs-comment">// 将参数传入对象这个函数中，并执行返回结果</span><br>  <span class="hljs-keyword">delete</span> context[fn]  <span class="hljs-comment">// 删除对象这个函数属性</span><br>  <span class="hljs-keyword">return</span> result   <span class="hljs-comment">// 返回结果</span><br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayHi</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> sum = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Hi,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;sum&#125;</span>`</span><br>&#125;<br><br>sayHi.myCall(user,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)  <span class="hljs-comment">// "Hi,John,3"</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="实现apply"><a href="#实现apply" class="headerlink" title="实现apply"></a>实现apply</h2><ul>
+<li>apply 的实现方法其实和 call 基本一样，唯一的区别就是在传参时的处理，下面我们就看一下 apply 的实现大体思路</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myApply = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)<br>  context[fn] = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">let</span> result<br>  <span class="hljs-comment">// 在处理参数上和 call 有一些区别</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])&#123;<br>    result = context[fn](...arguments[<span class="hljs-number">1</span>])<br>  &#125;<span class="hljs-keyword">else</span> &#123;<br>    result = context[fn]()<br>  &#125;<br>  <span class="hljs-keyword">delete</span> context[fn]<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Alice'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayBye</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">const</span> num = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Bye,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;num&#125;</span>`</span><br>&#125;<br><br>sayBye.myApply(user,[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])  <span class="hljs-comment">// "Bye,Alice,5"</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="实现Bind"><a href="#实现Bind" class="headerlink" title="实现Bind"></a>实现Bind</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myBind = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  <span class="hljs-keyword">const</span> _this = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">F</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-comment">// 如果被当做构造函数调用</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> F)&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> _this(...args, ...arguments)<br>    &#125;<br>    <span class="hljs-keyword">return</span> _this.apply(context, args.concat(...arguments))<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">other</span>(<span class="hljs-params">age, birthday</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-keyword">this</span>.birthday = birthday<br>&#125;<br><br><span class="hljs-keyword">const</span> detail = other.myBind(user,<span class="hljs-number">18</span>)<br>detail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy", age: 18, birthday: 2020&#125;</span><br><br><span class="hljs-keyword">const</span> newDetail = other.myBind(user, <span class="hljs-number">17</span>)<br><span class="hljs-keyword">const</span> detail2 = <span class="hljs-keyword">new</span> newDetail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy"&#125;</span><br><span class="hljs-built_in">console</span>.log(detail2) <span class="hljs-comment">// &#123;age: 17, birthday: 2020&#125;</span><br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>闭包</title>
+    <url>/blog/2020/09/01/closure/</url>
+    <content><![CDATA[<h3 id="什么是闭包"><a href="#什么是闭包" class="headerlink" title="什么是闭包"></a>什么是闭包</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;一个函数A中包含另一个函数B，函数B可以获取函数A中的变量，函数B就是闭包。通常情况下我们在子作用域中可以获取父作用域中的变量，但是我们想要从父作用域中获取子作用域中的变量该怎么办呢，这时候我们可以通过闭包，返回子作用域中的变量，这样我们就可以获取了。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> a = <span class="hljs-number">3</span>;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">father</span>(<span class="hljs-params">x</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> b = <span class="hljs-number">1</span> + x;<br>  <span class="hljs-keyword">return</span> (frunction()&#123;<br>    <span class="hljs-built_in">console</span>.log(b)<br>  &#125;)()<br>&#125;<br><span class="hljs-built_in">console</span>.log(a)<br>father(<span class="hljs-number">5</span>)<br></code></pre></td></tr></table></figure>
+<p>这段代码中，我们就可以在全局作用域中获取函数作用域中的变量b了。</p>
+<h3 id="闭包经常考察的知识点"><a href="#闭包经常考察的知识点" class="headerlink" title="闭包经常考察的知识点"></a>闭包经常考察的知识点</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>这是一道经典的面试题，控制台依次会输出什么，正确答案为：5，5，5，5，5，5假如用’-&gt;’表示为隔一秒钟，用’,’表示不间隔，那么怎么形容控制台的输出呢？答案为：5-&gt;5,5,5,5,5，是的，控制台会先输出一个5，之后过了一秒钟会连续输出五个5。<br>那么，让我们来分析一下，为什么并不是我们想要的输出：5，0，1，2，3，4呢？<br>在循环执行的过程中，几乎同时设置了5个定时器，这些定时器会在一秒之后触发，而循环之后的输出是立即执行的。<br>如果我们想让输出变为5-&gt;0,1,2,3,4，那应该怎么改写代码呢？</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span>)<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>或者可以用另一个办法</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>  &#125;, <span class="hljs-number">1000</span>, i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>还有一个最简单得办法</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
+<p>以上的几个方法都可以达到我们想要得结果</p>
+<p>现在如果我们想要输出得结果为：0-&gt;1-&gt;2-&gt;3-&gt;4-&gt;5,那么我们应该怎么改写呢</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span> * j)<br>  &#125;)(i)<br>&#125;<br>setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;, <span class="hljs-number">1000</span> * i)<br></code></pre></td></tr></table></figure>
+<p>这是最简单直接得方法，我们还可以使用异步得Promise来完成</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function">(<span class="hljs-params">j</span>) =&gt;</span> &#123;<br>    tasks.push(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>      setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>        resolve()<br>      &#125;, <span class="hljs-number">1000</span> * j)<br>    &#125;))<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>以上的代码可以简写为下面这种方式</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">const</span> output = <span class="hljs-function">(<span class="hljs-params">i</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>    resolve()<br>  &#125;, <span class="hljs-number">1000</span> * i)<br> &#125;)<br><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  tasks.push(output(i))<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>还可以使用async/await来实现</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> sleep = <span class="hljs-function">(<span class="hljs-params">time</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(resolve,time)<br>&#125;)<br>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>    <span class="hljs-keyword">if</span>(i &gt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>    &#125;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;<br>  <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;)()<br></code></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>http和https</title>
+    <url>/blog/2020/05/20/http/</url>
+    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 协议的全称为<code>超文本传输协议</code>。http 是以明文的方式发送内容，不提供任何方式的数据加密，因此 http 不适合传输敏感信息。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;http 默认工作在TCP协议 80 端口。</p>
+<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 协议的全称为<code>超文本传输安全协议</code>。它是为了解决 http 传输不安全而诞生的。https 在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;https 默认工作在 TCP 协议 443 端口。</p>
+<h3 id="https与http的区别"><a href="#https与http的区别" class="headerlink" title="https与http的区别"></a>https与http的区别</h3><ul>
+<li>http 是明文传输，数据都是未加密的，安全性较差，https 数据传输的过程是加密的，安全性好。</li>
+<li>https 协议需要到CA申请证书，免费的证书比较少，所以需要一定的费用</li>
+<li>http 页面响应速度比 https 快，因为 http 使用 TCP 三次握手建立连接，客户端和服务器需要交换3个包，https 除了 TCP 的三个包，还需要加上ssl握手需要的9个包，一共是12个包。</li>
+<li>https 和 http 使用的是完全不同的连接方式，用的端口也不一样，http 用的是 80 端口，https 用的是 443 端口。</li>
+<li>https 其实就是建构在 SSL/TLS 之上的 http 协议，所以 https 比 http 要更耗费服务器资源。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>网络基础</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>前端跨域解决方案</title>
+    <url>/blog/2020/09/27/hello-world/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;说到跨域我们不得不先来说说为什么会产生跨域。其实跨域就是指浏览器不能执行其它网站的脚本，它是由浏览器的同源策略造成的，是浏览器对javascript施加的安全限制。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;那什么又是同源策略呢？同源策略是一种约定，它是浏览器最核心也最基本的安全功能，所谓的同源是指域名、协议、端口相同。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;下面就让我来介绍几种解决跨域的方法吧！</p>
+<h3 id="1、JSONP"><a href="#1、JSONP" class="headerlink" title="1、JSONP"></a>1、JSONP</h3><ul>
+<li>原理：就是利用<code>&lt;script&gt;</code>标签没有跨域限制的漏洞。通过<code>&lt;script&gt;</code>标签指向一个需要访问的地址并提供一个回调函数来接收数据当需要通讯时。<br>客户端<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="actionscript">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span><span class="hljs-params">(data)</span> </span>&#123;</span><br><span class="javascript">        <span class="hljs-built_in">console</span>.log(data)</span><br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://127.0.0.1:8888/get/jsonp?callback=jsonp"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+服务端<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">'/get/jsonp'</span>, (ctx, next) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> callbackName = ctx.callback || <span class="hljs-string">'callback'</span><br>    <span class="hljs-keyword">let</span> data = &#123;<br>        <span class="hljs-string">"errcode"</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-string">"data"</span>: &#123;<br>            <span class="hljs-string">"name"</span>: <span class="hljs-string">"cx"</span>,<br>            <span class="hljs-string">"sex"</span>: <span class="hljs-string">"girl"</span>,<br>            <span class="hljs-string">"address"</span>: <span class="hljs-string">"BeiJing"</span><br>        &#125;<br>    <span class="hljs-keyword">let</span> jsonpStr = <span class="hljs-string">`~<span class="hljs-subst">$&#123;callbackName&#125;</span>(<span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(data)&#125;</span>)`</span><br>    ctx.type = <span class="hljs-string">'text/javascript'</span><br>    ctx.body = jsonpStr<br>    &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
+页面显示<img src="/blog/2020/09/27/hello-world/result.png" class=""></li>
+<li>优点<ul>
+<li>JSONP 使用简单且兼容性不错</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>只限于 get 请求（即只读）</li>
+<li>它只支持跨域HTTP这种情况</li>
+<li>jsonp在调用失败的时候，不会返回各种HTTP状态码（jsonp的错误处理机制并不完善，我们没办法进行错误处理）</li>
+<li>需要客户端和服务端定制进行开发，服务端返回的数据不是标准的json数据，而是callback包裹的数据</li>
+<li>JSONP只会发一次请求</li>
+</ul>
+</li>
+</ul>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发中可能会遇到多个JSONP请求的回调函数名是相同的，这时候就需要自己封装一个JSONP，下面是实现的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, jsonpCallback, success</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'script'</span>)<br>    script.src = url<br>    script.async = <span class="hljs-literal">true</span><br>    script.type = <span class="hljs-string">'text/javascript'</span><br>    <span class="hljs-built_in">window</span>[jsonpCallback] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>&#123;<br>        success &amp;&amp; success(data)<br>    &#125;<br>    <span class="hljs-built_in">document</span>.body.appendChild(script)<br>&#125;<br>jsonp(<span class="hljs-string">'http://127.0.0.1:8888/get/jsonp'</span>, <span class="hljs-string">'callback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(value)<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、CORS"><a href="#2、CORS" class="headerlink" title="2、CORS"></a>2、CORS</h3><ul>
+<li>原理：服务端设置 Access-Control-Allow-Origin 就可以开启 CORS。 该属性表示哪些域名可以访问资源，如果设置通配符则表示所有网站都可以访问资源。</li>
+</ul>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;虽然设置 CORS和前端没什么关系，但是通过这种方式解决跨域问题的话，会在发送请求时出现两种情况，分别为简单请求和复杂请求</p>
+<h4 id="简单请求"><a href="#简单请求" class="headerlink" title="简单请求"></a>简单请求</h4><p>1、使用下列方法之一：</p>
+<ul>
+<li>GET</li>
+<li>HEAD</li>
+<li>POST</li>
+</ul>
+<p>2、HTTP头信息不超出以下几种字段：</p>
+<ul>
+<li>Accept</li>
+<li>Accept-Language</li>
+<li>Content-Language</li>
+<li>Last-Event-ID</li>
+<li>Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain</li>
+</ul>
+<h4 id="复杂请求"><a href="#复杂请求" class="headerlink" title="复杂请求"></a>复杂请求</h4><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;不满足简单请求的就是复杂请求，对于复杂请求来说，首先会发起一个预检请求，该请求是 option 方法，通过该请求来知道服务端是否允许跨域请求。当使用XMLHttpRequest发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin;浏览器判断该相应头中是否包含Origin的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。</p>
+<ul>
+<li>优点：<ul>
+<li>CORS支持所有的浏览器请求类型，承载的请求数据量更大，开放更简洁，服务端只需要将处理后的数据直接返回，不需要再特殊处理。</li>
+<li>CORS可以通过onerror事件监听错误，并且浏览器控制台会看到报错信息，利于排查。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3、document-domain"><a href="#3、document-domain" class="headerlink" title="3、document.domain"></a>3、document.domain</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;该方法只能用于主域名相同的情况下,比如<code>a.test.com</code> 和 <code>b.test.com</code>,只需要给页面添加<code>document.domain = &#39;test.com&#39;</code>就可以实现跨域。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;比如我们可以打开 <a href="https://id.qq.com/login/ptlogin.html" target="_blank" rel="noopener">id.qq.com</a>，调出控制台，输入<code>let w = window.open(&#39;http://www.qq.com&#39;)</code>，之后访问<code>w.document</code>，发现控制台会报出跨域相关的错误。这时我们再在控制台中输入<code>document.domain = &#39;qq.com&#39;</code>，再访问<code>w.document</code>，这样就可以了。</p>
+{% asset_img jt.png  %}
+<ul>
+<li>注意：两个域名的主域名必须相同，并且所有的协议、端口都要一致，否则无法利用document.domain进行跨域。</li>
+</ul>
+<h3 id="4、postMessage"><a href="#4、postMessage" class="headerlink" title="4、postMessage"></a>4、postMessage</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这种方式一般会用在iframe嵌入其他页面时需要通信的情况下，只要正确的使用，这种方法很安全。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"iframe"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://test.com"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 发送端</span><br><span class="hljs-keyword">const</span> iframe = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'iframe);</span><br><span class="hljs-string">iframe.contentWindow.postMessage('</span>&#123;<span class="hljs-string">"method"</span>:<span class="hljs-string">"closeWindows"</span>&#125;<span class="hljs-string">', "http://test.com")</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//接收端</span><br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(e.data)<br>&#125;, <span class="hljs-literal">false</span>)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>注意：<ul>
+<li>当使用postMessage将数据发送到其他窗口时，始终指定精确的目标origin，而不是*。 恶意网站可以在您不知情的情况下更改窗口的位置，因此它可以拦截使用postMessage发送的数据。</li>
+<li>如果不希望从其他网站接收message，不要为message事件添加任何事件侦听器，这是一个完全万无一失的方式来避免安全问题。</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>前端技术</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>浏览器渲染整个页面的过程</title>
+    <url>/blog/2020/05/23/render/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;首先在地址栏中输入 url 地址，浏览器先查找自己本地的 DNS 记录找到对应的 IP 地址，如果本地没有找到就去 DNS服务器上查找，获取 IP 地址后开始建立 TCP 连接遵循三次握手就可以获取数据，浏览器开始解析 Html 构建 DOM 树，并行请求 css/image/js，CSS 文件下载完成，开始构建 CSS 树，CSS 树构建完成后和 DOM 树一起生成渲染树，计算出每个节点在屏幕中的位置，通过显卡把页面画到屏幕上。</p>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>原型和原型链</title>
+    <url>/blog/2020/05/23/prototype/</url>
+    <content><![CDATA[<h3 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h3><ul>
+<li><p>每一个函数数据类型（普通函数、类）都有一个天生自带的属性：prototype（原型），并且这个属性是一个对象数据类型的值；并且在 prototype 上浏览器天生给它加了一个属性 constructor（构造函数），属性值是当前函数（类）本身；每一个对象数据类型（普通的对象、实例、prototype…）也天生自带一个属性：<code>__proto__</code>,属性值是当前实例所属类的原型（prototype）。</p>
+</li>
+<li><p>Object 是 JS 中所有对象数据类型的基类（最顶层的类），在 Object.prototype 上<code>__proto__</code>这个属性为空，会返回 null。</p>
+</li>
+</ul>
+<h3 id="原型链"><a href="#原型链" class="headerlink" title="原型链"></a>原型链</h3><ul>
+<li><p>通过 对象名.属性名 的方式获取属性值的时候，首先在对象的私有属性上进行查找，如果私有中存在这个属性，则获取的是私有的属性值；如果私有的没有，则通过<code>__proto__</code>找到所属类的原型（类的原型上定义的属性和方法都是当前实例公有的属性和方法），原型上存在的话，获取的是公有属性值；如果原型上也没有，则继续通过原型上的<code>__proto__</code>继续向上查找，一直找到 Object.prototype 为止…，这种查找机制就是我们的“原型链模式”。</p>
+</li>
+<li><p>在IE浏览器中，我们的原型模式也是同样的原理，但是IE浏览器怕你通过<code>__proto__</code>把公有的修改，禁止我们使用<code>__proto__</code>。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP状态码</title>
+    <url>/blog/2020/05/20/statusCode/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;状态码的职责是当客户端向服务器端发送请求时，描述返回的请求结果。</p>
+<ul>
+<li>2XX 成功<ul>
+<li>200 OK：表示从客户端发来的请求在服务器端被正常处理了。</li>
+<li>204 No Content：表示服务器接收的请求已成功处理，但在返回的响应报文中 不含实体的主体部分。另外，也不允许返回任何实体的主体。</li>
+<li>206 Partial Content：表示客户端进行了范围请求，而服务器成功执行了这部分的 GET 请求。</li>
+</ul>
+</li>
+<li>3XX 重定向<ul>
+<li>301 Moved Permanently：永久性重定向。表示请求的资源已被分配了新的 URI，以后 应使用资源现在所指的 URI。</li>
+<li>302 Found：临时性重定向。表示请求的资源已被分配了新的 URI，希望 用户(本次)能使用新的 URI 访问。</li>
+<li>303 See Other：表示由于请求对应的资源存在着另一个 URI，应使用 GET 方法定向获取请求的资源。</li>
+<li>304 Not Modified：表示客户端发送附带条件的请求时，服务器端允许请求访 问资源，但未满足条件的情况。</li>
+<li>307 Temporary Redirect：临时重定向。该状态码与 302 Found 有着相同的含义。</li>
+</ul>
+</li>
+<li>4XX 客户端错误<ul>
+<li>400 Bad Request：表示请求报文中存在语法错误。</li>
+<li>401 Unauthorized：表示发送的请求需要有通过 HTTP 认证(BASIC 认证、 DIGEST 认证)的认证信息。另外若之前已进行过 1 次请求，则表示 用 户认证失败。</li>
+<li>403 Forbidden：表示对请求资源的访问被服务器拒绝了。</li>
+<li>404 Not Found：表示服务器上无法找到请求的资源。</li>
+</ul>
+</li>
+<li>5XX 服务器错误<ul>
+<li>500 Internal Server Error：表示服务器端在执行请求时发生了错误。</li>
+<li>503 Service Unavailable：表示服务器暂时处于超负载或正在进行停机维护，现在无法 处理请求。</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>网络基础</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>this</title>
+    <url>/blog/2020/05/23/this/</url>
+    <content><![CDATA[<ul>
+<li><p>在构造函数中，this 指向 new 出来的实例本身。</p>
+</li>
+<li><p>在事件中，this 指向触发这个事件的对象。</p>
+</li>
+<li><p>this 指向函数的直接调用者。</p>
+</li>
+<li><p>自执行函数中的 this 永远都是 window。</p>
+</li>
+<li><p>函数执行，首先看函数前面是否有”.”，有的话，”.”前面是谁 this 就是谁，没有的话，this 就是 window。</p>
+</li>
+<li><p>箭头函数中的 this 取决于包裹箭头函数的第一个普通函数 this。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>节流与防抖</title>
+    <url>/blog/2020/08/17/throttle/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;节流和防抖是我们平常开发经常会用到的性能优化之一，它们都是用来限制函数的执行频率，用来优化函数触发频率过高导致的响应速度跟不上，延迟假死或卡顿的现象，下面就让我们来详细的分析一下怎样来做节流与防抖。</p>
+<h3 id="防抖"><a href="#防抖" class="headerlink" title="防抖"></a>防抖</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的防抖就是在一定时间内如果某个事件被高频的触发,那么我们就延时让他执行，比如，我们可以设置一个定时器，时间为3s，当我们第一次触发行为时，计时器开始计时，如果在倒计时时间内没有再次触发行为，那么计时结束后会执行函数，但是在计时时间内如果又触发了该行为，则计时器开始重新计时，以此类推，其实防抖就是在触发高频率的行为时只执行一次函数，这样通过控制次数来提高性能。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">debounce</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> timeout<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">if</span>(!timeout)&#123;<br>      <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>      <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>      timeout = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        fn.apply(context, arg)<br>      &#125;,wait)<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>      clearTimeout(timeout)<br>    &#125;<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是防抖'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, debounce(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 prin 事件</p>
+<h3 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的节流就是在高频的触发某个行为时，我们设置一个规定的时间，在该时间内只会执行一次，节流会稀释函数执行的频率。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们还是用上述的滚动事件来举例，代码如下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">throttle</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> time = <span class="hljs-number">0</span>, timer = <span class="hljs-literal">null</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> now = <span class="hljs-built_in">Date</span>.now()<br>    <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>    <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>    <span class="hljs-keyword">if</span> (now - time &gt; wait) &#123;<br>      fn.apply(context, arg)<br>      time = now<br>    &#125; <span class="hljs-keyword">else</span> (<br>      timer &amp;&amp; clearTimeout(timer)<br>      timer = setTimeout( <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        time = now<br>        fn.apply(context, arg)<br>      &#125;, wait)<br>    )<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是节流'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, throttle(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>性能优化</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>检测数据类型的几种方式</title>
+    <url>/blog/2020/05/23/typeof/</url>
+    <content><![CDATA[<h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><ul>
+<li><p>typeof 检测基本数据类型，除了 null 以外其它的都可以检测出来，typeof(null) 返回的结果是 “object”。</p>
+</li>
+<li><p>typeof 检测引用数据类型，除了函数以外其它返回的结果都是 “object”。</p>
+</li>
+<li><p>使用 typeof 检测数据类型，返回的结果是字符串包含着对应的数据类型。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">typeof</span>(<span class="hljs-literal">null</span>); <span class="hljs-comment">// "object"</span><br><br><span class="hljs-keyword">typeof</span>(<span class="hljs-string">"2"</span>); <span class="hljs-comment">// "string"</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><ul>
+<li><p>instanceof 检测某一个实例是否属于某个类。</p>
+</li>
+<li><p>不能用来检测和处理字面量方式创建出来的基本数据类型值。</p>
+</li>
+<li><p>instanceof 的特性：只要在当前实例的原型链上，我们用其检测出来的结果都是true。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>()<br><br>obj <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><ul>
+<li><p>作用和 instanceof 非常的相似。</p>
+</li>
+<li><p>constructor 可以处理基本数据类型的检测。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> a = <span class="hljs-number">111</span>;<br><span class="hljs-keyword">const</span> b = &#123;&#125;;<br>a.constructor === <span class="hljs-built_in">Number</span>; <span class="hljs-comment">// true</span><br>b.constructor === <span class="hljs-built_in">Object</span>; <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><ul>
+<li><p>最准确常用的方式。</p>
+</li>
+<li><p>第一个object代表当前实例是对象数据类型的（这个是固定死的）第二个Object，代表的是obj所属的类是Object。</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>); <span class="hljs-comment">// "[object String]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call([]); <span class="hljs-comment">// "[object Array]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;); <span class="hljs-comment">// "[object Function]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">111</span>); <span class="hljs-comment">// "[object Number]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>); <span class="hljs-comment">//"[object Null]"</span><br></code></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>js中的继承</title>
+    <url>/blog/2020/09/25/inherit/</url>
+    <content><![CDATA[<h3 id="1、原型链继承"><a href="#1、原型链继承" class="headerlink" title="1、原型链继承"></a>1、原型链继承</h3><ul>
+<li>原理：原型链对象变成父类的实例，子类就可以调用父类的方法和属性（利用原型让一个引用类型继承另一个引用类型的属性和方法）<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123; &#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> child = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCi'</span>)<br><br><span class="hljs-built_in">console</span>.log(child.age) <span class="hljs-comment">// 13</span><br><span class="hljs-built_in">console</span>.log(child.getName()) <span class="hljs-comment">// 'AmilyCi'</span><br></code></pre></td></tr></table></figure></li>
+<li>优点：实现起来简单</li>
+<li>缺点：不能向父类传递参数，引用类型的属性会被所有实例共享</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.age = <span class="hljs-number">13</span><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'AmilyCx'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Json'</span>)<br><br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br></code></pre></td></tr></table></figure>
+<p>你会发现，当我们给 person1 增加一个喜欢的运动时，我们打印出 person2 喜欢的运动，这时候 person2 的喜欢运动中也增加了这个运动。这个属性会被所有的实例共享。</p>
+<h3 id="2、构造函数继承"><a href="#2、构造函数继承" class="headerlink" title="2、构造函数继承"></a>2、构造函数继承</h3><ul>
+<li>原理：子类构造函数内部调用父类构造函数，并传入this<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'LiLy'</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Uncaught TypeError: person1.getName is not a function</span><br></code></pre></td></tr></table></figure>
+这次，我们通过 call 方法，可以给父类传参啦，并且我们给 person1 增加一项喜欢的运动，person2 不会也被加上啦。<br>但是我们发现，我们创建的实例并不能调用父类的方法了，会报错，这是因为我们现在用的构造函数方式导致父类并不在子类的原型链上，所以子类无法调用父类的方法。</li>
+</ul>
+<h3 id="3、组合继承"><a href="#3、组合继承" class="headerlink" title="3、组合继承"></a>3、组合继承</h3><ul>
+<li>原理：结合了前两个方法的优点</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Parent</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.likeSports = [<span class="hljs-string">'badminton'</span>, <span class="hljs-string">'basketball'</span>, <span class="hljs-string">'swimming'</span>]<br>&#125;<br><br>Parent.prototype.getName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Child</span>(<span class="hljs-params">name, age</span>)</span>&#123;<br>  Parent.call(<span class="hljs-keyword">this</span>, name)<br>  <span class="hljs-keyword">this</span>.age = age<br>&#125;<br><br>Child.prototype = <span class="hljs-keyword">new</span> Parent()<br>Child.prototype.constructor = Child<br>Child.prototype.getAge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.age<br>&#125;<br><br><span class="hljs-keyword">let</span> person1 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lucy'</span>, <span class="hljs-number">18</span>)<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Child(<span class="hljs-string">'Lily'</span>, <span class="hljs-number">20</span>)<br>person1.likeSports.push(<span class="hljs-string">'shopping'</span>)<br><br><span class="hljs-built_in">console</span>.log(person1.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person2.likeSports) <span class="hljs-comment">// ["badminton", "basketball", "swimming"]</span><br><span class="hljs-built_in">console</span>.log(person1.name) <span class="hljs-comment">// Lucy</span><br><span class="hljs-built_in">console</span>.log(person1.getAge()) <span class="hljs-comment">// 18</span><br><span class="hljs-built_in">console</span>.log(person1.getName()) <span class="hljs-comment">// Lucy</span><br></code></pre></td></tr></table></figure>
+<p>这样我们解决了传参的问题，引用类型的属性共享的问题，还有调用父类原型上的方法的问题都解决了。<br>但是现在还有一个不足之处，在给 Child 原型赋值的时候都会执行一次父类构造函数，所以无论什么情况下都会调用两次父类构造函数</p>
+<h3 id="4、原型式继承"><a href="#4、原型式继承" class="headerlink" title="4、原型式继承"></a>4、原型式继承</h3>]]></content>
+      <categories>
+        <category>JS基础</category>
+      </categories>
+      <tags>
+        <tag>JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Webpack基础入门01</title>
+    <url>/blog/2020/05/19/webpack/</url>
+    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack是一种前端资源构建工具,一个静态模块打包器。当我们在开发过程中使用一些浏览器并不能识别的语言时，比如：在js文件中使用ES Module语法、使用less语法等等，这时我们就需要一个工具将浏览器不能识别的语法编译成浏览器能够识别的语法，在过去我们会把这些语法通过一个个小工具去编译，这样维护起来会很麻烦，所以前端就提出了一个概念，叫做”构建工具”，构建工具的意思就是找一个大的工具将这些小的工具功能都包含进来，现在我们只要关注这个大工具就可以了。而Webpack就是构建工具的一种。Webpack会根据入口文件的依赖关系，将所有的资源(js/json/css/image/less/…)全部引进来，形成chunk代码块，然后会根据不同的资源进行不同的处理，比如将less编译成css，这个过程叫做打包，打包之后输出出去，输出去的文件我们叫做bundle，所以Webpack还是一个静态模块打包器。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;webpack有五个核心概念，分别是：entry、output、loader、plugins、mode</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 全局安装，我们可以使用webpack的相关指令</span><br>npm i webpack webpack-cli -global<br><span class="hljs-comment">// 本地安装</span><br>npm i webpack webpack-cli -D<br></code></pre></td></tr></table></figure>
+<ul>
+<li>运行指令<ul>
+<li>开发环境：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack会以./src/index.js为入口文件开始打包，打包后输出到./build/build.js</span><br>webpack ./src/index.js -o ./build/build.js --mode=development<br></code></pre></td></tr></table></figure></li>
+<li>生产环境：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// webpack会以./src/index.js为入口文件开始打包，打包后输出到./build/build.js</span><br>webpack ./src/index.js -o ./build/build.js --mode=production<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>总结：<ul>
+<li>生产环境比开发环境多一个压缩js代码</li>
+<li>webpack能处理js/json，不能处理css/img等其他资源</li>
+<li>生产环境和开发环境将ES6模块化编译成浏览器能识别的模块化</li>
+</ul>
+</li>
+</ul>
+<h3 id="打包资源文件"><a href="#打包资源文件" class="headerlink" title="打包资源文件"></a>打包资源文件</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们可以在根目录下建一个Webpack的配置文件webpack.config.js，用来指示Webpack做哪些事情（当我们运行webpack指令时，会加载里面的配置）<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;所有构建工具都是基于nodejs平台运行的,模块化默认采用commonjs</p>
+<ul>
+<li>打包样式资源（webpack.config.js）<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// resolve用来拼接绝对路径的方法</span><br><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-comment">// webpack配置</span><br>  <span class="hljs-comment">// 入口起点</span><br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  <span class="hljs-comment">// 输出</span><br>  output: &#123;<br>    <span class="hljs-comment">// 输出文件名</span><br>    filname: <span class="hljs-string">'build.js'</span>,<br>    <span class="hljs-comment">// 输出路径</span><br>    <span class="hljs-comment">// __dirname nodejs的变量，代表当前文件的目录绝对路径</span><br>    path: resolve(__diranem,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-comment">// loader的配置</span><br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      <span class="hljs-comment">// 详细loader的配置</span><br>      <span class="hljs-comment">// 不同文件必须配置不同loader处理</span><br>      &#123;<br>        <span class="hljs-comment">// 匹配哪些文件</span><br>        test: <span class="hljs-regexp">/\.css/</span>,<br>        <span class="hljs-comment">// 使用哪些loader进行处理</span><br>        use: [<br>          <span class="hljs-comment">// use数组中loader执行顺序：从右到左，从下到上 依次执行</span><br>          <span class="hljs-comment">// 创建style标签，将js中的样式资源插入进去，添加到head中生效</span><br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-comment">// 将css文件变成commonjs模块加载js中,里面内容是样式字符串</span><br>          <span class="hljs-string">'css-loader'</span><br>        ]<br>      &#125;,<br>      &#123;<br>        test: <span class="hljs-regexp">/\.less/</span>,<br>        use: [<br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-string">'css-loader'</span>,<br>          <span class="hljs-comment">// 将less文件编译成css文件</span><br>          <span class="hljs-comment">// 需要下载less-loader less</span><br>          <span class="hljs-string">'less-loader'</span><br>        ]<br>      &#125;<br>    ]<br>  &#125;,<br>  <span class="hljs-comment">// plugins的配置</span><br>  plugins: [<br>    <span class="hljs-comment">// 详细plugins的配置</span><br>  ],<br>  <span class="hljs-comment">// 模式</span><br>  mode: <span class="hljs-string">'development'</span> <span class="hljs-comment">// 开发模式</span><br>  <span class="hljs-comment">// mode: 'production'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+注：以上都需要下载相应的loader，例如：<code>npm i style-loader css-loader -D</code></li>
+<li>打包html资源<br>打包html需要引入html-webpack-plugin插件<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">import</span> HtmlWebpackPlugin <span class="hljs-keyword">from</span> <span class="hljs-string">'html-webpack-plugin'</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      <span class="hljs-comment">// loader配置</span><br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-comment">// plugins的配置</span><br>    <span class="hljs-comment">// 功能：默认会创建一个空的HTML，自动引入打包输出的所有资源（JS/CSS）</span><br>    <span class="hljs-comment">// 如果需要有结构的html文件，可以通过传参的方式</span><br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      <span class="hljs-comment">// 复制./src/index.html文件，并自动引入打包输出的所有资源（JS/CSS）</span><br>      template: <span class="hljs-string">'./src/index.html</span><br><span class="hljs-string">    &#125;)</span><br><span class="hljs-string">  ],</span><br><span class="hljs-string">  mode: '</span>development<span class="hljs-string">'</span><br><span class="hljs-string">&#125;</span><br></code></pre></td></tr></table></figure></li>
+<li>打包图片资源<br>index.html<figure class="highlight html"><table><tr><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box3"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./01.jpg"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"01"</span>&gt;</span><br></code></pre></td></tr></table></figure>
+index.less<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./01.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br><span class="hljs-selector-id">#box2</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./02.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br><span class="hljs-selector-id">#box3</span>&#123;<br>  <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">'./03.jpg'</span>);<br>  <span class="hljs-attribute">background-repeat</span>: no-repeat;<br>  <span class="hljs-attribute">background-size</span>: <span class="hljs-number">100%</span> <span class="hljs-number">100%</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+index.js<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-string">'./index.less'</span><br></code></pre></td></tr></table></figure>
+webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; =  <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.less$/</span>,<br>        <span class="hljs-comment">// 要使用多个loader处理用use</span><br>        use: [<br>          <span class="hljs-string">'style-loader'</span>,<br>          <span class="hljs-string">'css-loader'</span>,<br>          <span class="hljs-string">'less-loader'</span><br>        ]<br>      &#125;,<br>      &#123;<br>        <span class="hljs-comment">// 处理图片资源</span><br>        <span class="hljs-comment">// 处理不了html中img图片</span><br>        test: <span class="hljs-regexp">/\.(jpg|png|gif)$/</span>,<br>        <span class="hljs-comment">// 使用一个loader</span><br>        <span class="hljs-comment">// 下载 url-loader file-loader</span><br>        loader: <span class="hljs-string">'url-loader'</span>,<br>        options: &#123;<br>          <span class="hljs-comment">// 图片大小小于8kb,就会被base64处理</span><br>          <span class="hljs-comment">// 优点：减少请求数量（减轻服务器压力）</span><br>          <span class="hljs-comment">// 缺点：图片体积会更大（文件请求速度会更慢）</span><br>          limit: <span class="hljs-number">8</span> * <span class="hljs-number">1024</span>,<br>          <span class="hljs-comment">// 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs</span><br>          <span class="hljs-comment">// 解析时会出问题：[object Module]</span><br>          <span class="hljs-comment">// 解决：关闭url-loader的es6模块化，使用commonjs解析</span><br>          <span class="hljs-comment">// 注：目前新版本不会有这个问题</span><br>          esModule: <span class="hljs-literal">false</span>,<br>          <span class="hljs-comment">// 给图片进行重命名</span><br>          <span class="hljs-comment">// [hash:10]取图片的hash的前10位</span><br>          <span class="hljs-comment">// [ext]取文件原来扩展名</span><br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;,<br>      &#123;<br>        test: <span class="hljs-regexp">/\.html$/</span>,<br>        <span class="hljs-comment">// 处理html文件的img图片（负责引入img，从而能被url-loader进行处理）</span><br>        loader: <span class="hljs-string">'html-loader'</span><br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+最新版本已经优化了url-loader，不会出现在html文件中直接引入图片解析时显示[object Module]这个问题</li>
+<li>打包其他资源<br>其他资源一般指除了html、css、js以外的资源，比如说字体文件资源<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123;resolve&#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.css$/</span>,<br>        use: [<span class="hljs-string">'style-loader'</span>,<span class="hljs-string">'css-loader'</span>]<br>      &#125;,<br>      <span class="hljs-comment">// 打包其他资源（除了html/js/css资源以外的其他资源）</span><br>      &#123;<br>        <span class="hljs-comment">// 排除html/js/css资源</span><br>        exclude: <span class="hljs-regexp">/\.(html|js|css)$/</span>,<br>        loader: <span class="hljs-string">'file-loader'</span>,<br>        options: &#123;<br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="devServer"><a href="#devServer" class="headerlink" title="devServer"></a>devServer</h3>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;devServer用来自动化(自动编译，自动打开浏览器，自动刷新浏览器)，只会在内存中编译打包，不会有任何输出。<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123;resolve&#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  entry: <span class="hljs-string">'./src/index.js'</span>,<br>  output: &#123;<br>    filename: <span class="hljs-string">'built.js'</span>,<br>    path: resolve(__dirname,<span class="hljs-string">'build'</span>)<br>  &#125;,<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.css$/</span>,<br>        use: [<span class="hljs-string">'style-loader'</span>,<span class="hljs-string">'css-loader'</span>]<br>      &#125;,<br>      <span class="hljs-comment">// 打包其他资源（除了html/js/css资源以外的其他资源）</span><br>      &#123;<br>        <span class="hljs-comment">// 排除html/js/css资源</span><br>        exclude: <span class="hljs-regexp">/\.(html|js|css)$/</span>,<br>        loader: <span class="hljs-string">'file-loader'</span>,<br>        options: &#123;<br>          name: <span class="hljs-string">'[hash:10].[ext]'</span><br>        &#125;<br>      &#125;<br>    ]<br>  &#125;,<br>  plugins: [<br>    <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>      template: <span class="hljs-string">'./src/index.html'</span><br>    &#125;)<br>  ],<br>  mode: <span class="hljs-string">'development'</span>,<br>  devServer: &#123;<br>    <span class="hljs-comment">// 项目构建后路径</span><br>    contentBase: resolve(__dirname,<span class="hljs-string">'build'</span>),<br>    <span class="hljs-comment">// 启动gzip压缩</span><br>    compress: <span class="hljs-literal">true</span>,<br>    <span class="hljs-comment">// 端口号</span><br>    port: <span class="hljs-number">3000</span>,<br>    <span class="hljs-comment">// 自动打开默认浏览器</span><br>    open: <span class="hljs-literal">true</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在运行前需要安装webpack-dev-server包，指令为<code>npm i webpack-dev-server -D</code>，启动devServer指令为：<code>npx webpack-dev-server</code>，由于我们没有全局安装webpack-dev-server，所以要在前面加一个npx。<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;webpack指令会将打包结果输出出去，npx webpack-dev-server指令只会在内存中编译打包，没有输出。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>前端构建工具</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Webpack基础入门02</title>
+    <url>/blog/2020/05/19/webpack02/</url>
+    <content><![CDATA[<h3 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Webpack 可以配置两种环境模式，即：<code>开发环境</code>和<code>生产环境</code>。开发环境是 能让代码本地调试运行的环境，生产环境是 能让代码优化上线运行的环境。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们写的源代码里面包含了 es6 语法, less 文件要经过webpack进行编译处理,比如将 less 文件编译成 css 文件，把 es6 语法编译成浏览器能够识别的语法，然后输出的 bundle 这个资源文件就可以被浏览器运行了，为了让开发者更轻松，这里还添加了一些自动化工作，比如自动打开浏览器，自动刷新，自动编译等等一些咧操作，让我们的效率更高，这就是开发环境所做的事情。</p>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们的样式在之前处理是整合到js中的，如果让样式在 js 中，会让 js 体积变得很大，下载的很慢，同时，这里会先加载js，再通过创建<code>&lt;style&gt;</code>标签，会出现闪屏的现象，所以我们要将css从js文件中提取出来，还有代码压缩，兼容性处理都可以让带吗更快，性能更好，能够平稳的运行，这样我们要做的事情会很多，如果把这些都放在开发环境下，那开发环境要做的事情就太多了，打包速度就会很慢，不利于我们开发，所以这些事情我们要放在生产环境上去做。</p>
+<h3 id="提取css成单独文件"><a href="#提取css成单独文件" class="headerlink" title="提取css成单独文件"></a>提取css成单独文件</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这里需要用到一个新的插件 <code>miniCssExtractPlugin</code>，引用这个插件之后打包出来的样式是以 <code>&lt;link&gt;</code>  引入，而不是 <code>&lt;style&gt;</code> 标签，所以不会出现闪屏现象，并且 css 文件和 js 文件分割开了，js 文件的体积也没有那么大，解析速度会更好一些。</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    <span class="hljs-comment">// 创建style标签，将样式放入</span><br>                    <span class="hljs-comment">// 'style-loader', </span><br>                    <span class="hljs-comment">// 这个loader取代style-loader。作用：提取js中的css成单独文件</span><br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-comment">// 将css整合到js文件中</span><br>                    <span class="hljs-string">'css-loader'</span><br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            <span class="hljs-comment">// 对输出的css文件进行重命名</span><br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>目录文件</p>
+{% asset_img catalogue.jpeg  %}
+
+<p>打包输出的 index.html 文件</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width, initial-scale=1.0"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"css/built.css"</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"js/built.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="css的兼容性处理"><a href="#css的兼容性处理" class="headerlink" title="css的兼容性处理"></a>css的兼容性处理</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;有时我们写的 css 样式并不是在所有的浏览器上都兼容，而 webpack 的 postcss-loader 会帮助我们解决这个问题。</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><br><span class="hljs-comment">// 设置nodejs环境变量</span><br>process.env.NODE_ENV = <span class="hljs-string">'development'</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-comment">// 这种写法是使用loader的默认配置</span><br>                    <span class="hljs-string">'css-loader'</span>,<br>                    <span class="hljs-comment">/*</span><br><span class="hljs-comment">                        css兼容性处理：postcss --&gt; postcss-loader postcss-preset-env，下载这两个包</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">                        postcss-preset-env插件帮postcss找到package.json中 browserslist 里面的配置，通过配置加载指定的css兼容性样式</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">                        “browserslist”:&#123;</span><br><span class="hljs-comment">                            开发环境 --&gt; 设置node环境变量 : process.env.NODE_ENV = development</span><br><span class="hljs-comment">                            "development":[</span><br><span class="hljs-comment">                                "last 1 chrome version",</span><br><span class="hljs-comment">                                "last 1 firefox version",</span><br><span class="hljs-comment">                                "last 1 safari version"</span><br><span class="hljs-comment">                            ],</span><br><span class="hljs-comment">                            生产环境：默认是看生产环境</span><br><span class="hljs-comment">                            "production":[</span><br><span class="hljs-comment">                                "&gt;0.2%",</span><br><span class="hljs-comment">                                "not dead",</span><br><span class="hljs-comment">                                "not op_mini all"</span><br><span class="hljs-comment">                            ]</span><br><span class="hljs-comment">                        &#125;</span><br><span class="hljs-comment">                    */</span><br>                   <span class="hljs-comment">// 使用loader的默认配置</span><br>                   <span class="hljs-comment">// "postcss-loader"</span><br>                   <span class="hljs-comment">// 修改loader的配置</span><br>                   &#123;<br>                       loader: <span class="hljs-string">'postcss-loader'</span>,<br>                       options: &#123;<br>                           <span class="hljs-comment">// 固定写法</span><br>                           ident: <span class="hljs-string">'postcss'</span>,<br>                           plugins: <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> [<br>                               <span class="hljs-comment">// postcss插件</span><br>                               <span class="hljs-built_in">require</span>(<span class="hljs-string">'postcss-preset-env'</span>)()<br>                           ]<br>                       &#125;<br>                   &#125;<br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;)<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>package.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json">&#123;<br>  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"webpack_code"</span>,<br>  <span class="hljs-attr">"version"</span>: <span class="hljs-string">"1.0.0"</span>,<br>  <span class="hljs-attr">"description"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"main"</span>: <span class="hljs-string">"index.js"</span>,<br>  <span class="hljs-attr">"scripts"</span>: &#123;<br>    <span class="hljs-attr">"test"</span>: <span class="hljs-string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><br>  &#125;,<br>  <span class="hljs-attr">"author"</span>: <span class="hljs-string">""</span>,<br>  <span class="hljs-attr">"license"</span>: <span class="hljs-string">"ISC"</span>,<br>  <span class="hljs-attr">"devDependencies"</span>: &#123;<br>    <span class="hljs-attr">"css-loader"</span>: <span class="hljs-string">"^3.5.3"</span>,<br>    <span class="hljs-attr">"file-loader"</span>: <span class="hljs-string">"^6.0.0"</span>,<br>    <span class="hljs-attr">"html-loader"</span>: <span class="hljs-string">"^1.1.0"</span>,<br>    <span class="hljs-attr">"html-webpack-plugin"</span>: <span class="hljs-string">"^4.3.0"</span>,<br>    <span class="hljs-attr">"less"</span>: <span class="hljs-string">"^3.11.1"</span>,<br>    <span class="hljs-attr">"less-loader"</span>: <span class="hljs-string">"^6.1.0"</span>,<br>    <span class="hljs-attr">"mini-css-extract-plugin"</span>: <span class="hljs-string">"^0.9.0"</span>,<br>    <span class="hljs-attr">"postcss-loader"</span>: <span class="hljs-string">"^3.0.0"</span>,<br>    <span class="hljs-attr">"postcss-preset-env"</span>: <span class="hljs-string">"^6.7.0"</span>,<br>    <span class="hljs-attr">"style-loader"</span>: <span class="hljs-string">"^1.2.1"</span>,<br>    <span class="hljs-attr">"url-loader"</span>: <span class="hljs-string">"^4.1.0"</span>,<br>    <span class="hljs-attr">"webpack"</span>: <span class="hljs-string">"^4.43.0"</span>,<br>    <span class="hljs-attr">"webpack-cli"</span>: <span class="hljs-string">"^3.3.11"</span>,<br>    <span class="hljs-attr">"webpack-dev-server"</span>: <span class="hljs-string">"^3.11.0"</span><br>  &#125;,<br>  <span class="hljs-attr">"browserslist"</span>:&#123;<br>    <span class="hljs-attr">"development"</span>:[<br>        <span class="hljs-string">"last 1 chrome version"</span>,<br>        <span class="hljs-string">"last 1 firefox version"</span>,<br>        <span class="hljs-string">"last 1 safari version"</span><br>    ],<br>    <span class="hljs-attr">"production"</span>:[<br>        <span class="hljs-string">"&gt;0.2%"</span>,<br>        <span class="hljs-string">"not dead"</span>,<br>        <span class="hljs-string">"not op_mini all"</span><br>    ]<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>a.css</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">background-color</span>: pink;<br>    <span class="hljs-attribute">display</span>: flex;<br>    <span class="hljs-attribute">backface-visibility</span>: hidden;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>打包之后的css文件</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><code class="hljs css"><span class="hljs-selector-id">#box1</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;<br>    <span class="hljs-attribute">background-color</span>: pink;<br>    <span class="hljs-attribute">display</span>: flex;<br>    <span class="hljs-attribute">-webkit-backface-visibility</span>: hidden;<br>            <span class="hljs-attribute">backface-visibility</span>: hidden;<br>&#125;<br><span class="hljs-selector-id">#box2</span> &#123;<br>    <span class="hljs-attribute">width</span>: <span class="hljs-number">200px</span>;<br>    <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;<br>    <span class="hljs-attribute">background-color</span>: deeppink;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="压缩css"><a href="#压缩css" class="headerlink" title="压缩css"></a>压缩css</h3><p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> &#123; resolve &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)<br><span class="hljs-keyword">const</span> HtmlWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'html-webpack-plugin'</span>)<br><span class="hljs-keyword">const</span> miniCssExtractPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mini-css-extract-plugin'</span>)<br><span class="hljs-keyword">const</span> optimizeCssAssetsWebpackPlugin = <span class="hljs-built_in">require</span>(<span class="hljs-string">'optimize-css-assets-webpack-plugin'</span>)<br><br>process.env.NODE_ENV = <span class="hljs-string">'development'</span><br><br><span class="hljs-comment">// optimize-css-assets-webpack-plugin</span><br><br><span class="hljs-built_in">module</span>.exports = &#123;<br>    entry: <span class="hljs-string">'./src/js/index.js'</span>,<br>    output: &#123;<br>        filename: <span class="hljs-string">'js/built.js'</span>,<br>        path: resolve(__dirname, <span class="hljs-string">'build'</span>)<br>    &#125;,<br>    <span class="hljs-built_in">module</span>: &#123;<br>        rules: [<br>            &#123;<br>                test: <span class="hljs-regexp">/\.css$/</span>,<br>                use: [<br>                    miniCssExtractPlugin.loader,<br>                    <span class="hljs-string">'css-loader'</span>,<br>                   &#123;<br>                       loader: <span class="hljs-string">'postcss-loader'</span>,<br>                       options: &#123;<br>                           ident: <span class="hljs-string">'postcss'</span>,<br>                           plugins: <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> [<br>                               <span class="hljs-built_in">require</span>(<span class="hljs-string">'postcss-preset-env'</span>)()<br>                           ]<br>                       &#125;<br>                   &#125;<br>                ]<br>            &#125;<br>        ]<br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> HtmlWebpackPlugin(&#123;<br>            template: <span class="hljs-string">'./src/index.html'</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> miniCssExtractPlugin(&#123;<br>            filename: <span class="hljs-string">'css/built.css'</span><br>        &#125;),<br>        <span class="hljs-comment">// 压缩css</span><br>        <span class="hljs-keyword">new</span> optimizeCssAssetsWebpackPlugin()<br>    ],<br>    mode: <span class="hljs-string">'development'</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>使用 optimize-css-assets-webpack-plugin 插件就可以压缩css</p>
+]]></content>
+      <categories>
+        <category>前端构建工具</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>webpack03</title>
     <url>/blog/2020/05/31/webpack03/</url>
     <content><![CDATA[<h3 id="eslint检查js"><a href="#eslint检查js" class="headerlink" title="eslint检查js"></a>eslint检查js</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;如果我们好多人开发一个项目，每个人有自己一套代码规范，这样会造成代码混乱，不宜维护。而 eslint 可以解决这个问题，让开发者使用同一套代码规范。</p>
@@ -572,55 +648,6 @@ webpack.config.js<figure class="highlight js"><table><tr><td class="code"><pre><
       </categories>
       <tags>
         <tag>webpack</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>节流与防抖</title>
-    <url>/blog/2020/08/17/throttle/</url>
-    <content><![CDATA[<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;节流和防抖是我们平常开发经常会用到的性能优化之一，它们都是用来限制函数的执行频率，用来优化函数触发频率过高导致的响应速度跟不上，延迟假死或卡顿的现象，下面就让我们来详细的分析一下怎样来做节流与防抖。</p>
-<h3 id="防抖"><a href="#防抖" class="headerlink" title="防抖"></a>防抖</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的防抖就是在一定时间内如果某个事件被高频的触发,那么我们就延时让他执行，比如，我们可以设置一个定时器，时间为3s，当我们第一次触发行为时，计时器开始计时，如果在倒计时时间内没有再次触发行为，那么计时结束后会执行函数，但是在计时时间内如果又触发了该行为，则计时器开始重新计时，以此类推，其实防抖就是在触发高频率的行为时只执行一次函数，这样通过控制次数来提高性能。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">debounce</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> timeout<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">if</span>(!timeout)&#123;<br>      <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>      <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>      timeout = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        fn.apply(context, arg)<br>      &#125;,wait)<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>      clearTimeout(timeout)<br>    &#125;<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是防抖'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, debounce(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 prin 事件</p>
-<h3 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的节流就是在高频的触发某个行为时，我们设置一个规定的时间，在该时间内只会执行一次，节流会稀释函数执行的频率。</p>
-<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们还是用上述的滚动事件来举例，代码如下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">throttle</span>(<span class="hljs-params">fn, wait</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> time = <span class="hljs-number">0</span>, timer = <span class="hljs-literal">null</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> now = <span class="hljs-built_in">Date</span>.now()<br>    <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">arguments</span><br>    <span class="hljs-keyword">let</span> context = <span class="hljs-keyword">this</span><br>    <span class="hljs-keyword">if</span> (now - time &gt; wait) &#123;<br>      fn.apply(context, arg)<br>      time = now<br>    &#125; <span class="hljs-keyword">else</span> (<br>      timer &amp;&amp; clearTimeout(timer)<br>      timer = setTimeout( <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        time = now<br>        fn.apply(context, arg)<br>      &#125;, wait)<br>    )<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prin</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'我是节流'</span>)<br>&#125;<br><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'scroll'</span>, throttle(prin, <span class="hljs-number">1000</span>))<br></code></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>性能优化</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>闭包</title>
-    <url>/blog/2020/09/01/closure/</url>
-    <content><![CDATA[<h3 id="什么是闭包"><a href="#什么是闭包" class="headerlink" title="什么是闭包"></a>什么是闭包</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;一个函数A中包含另一个函数B，函数B可以获取函数A中的变量，函数B就是闭包。通常情况下我们在子作用域中可以获取父作用域中的变量，但是我们想要从父作用域中获取子作用域中的变量该怎么办呢，这时候我们可以通过闭包，返回子作用域中的变量，这样我们就可以获取了。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> a = <span class="hljs-number">3</span>;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">father</span>(<span class="hljs-params">x</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> b = <span class="hljs-number">1</span> + x;<br>  <span class="hljs-keyword">return</span> (frunction()&#123;<br>    <span class="hljs-built_in">console</span>.log(b)<br>  &#125;)()<br>&#125;<br><span class="hljs-built_in">console</span>.log(a)<br>father(<span class="hljs-number">5</span>)<br></code></pre></td></tr></table></figure>
-<p>这段代码中，我们就可以在全局作用域中获取函数作用域中的变量b了。</p>
-<h3 id="闭包经常考察的知识点"><a href="#闭包经常考察的知识点" class="headerlink" title="闭包经常考察的知识点"></a>闭包经常考察的知识点</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
-<p>这是一道经典的面试题，控制台依次会输出什么，正确答案为：5，5，5，5，5，5假如用’-&gt;’表示为隔一秒钟，用’,’表示不间隔，那么怎么形容控制台的输出呢？答案为：5-&gt;5,5,5,5,5，是的，控制台会先输出一个5，之后过了一秒钟会连续输出五个5。<br>那么，让我们来分析一下，为什么并不是我们想要的输出：5，0，1，2，3，4呢？<br>在循环执行的过程中，几乎同时设置了5个定时器，这些定时器会在一秒之后触发，而循环之后的输出是立即执行的。<br>如果我们想让输出变为5-&gt;0,1,2,3,4，那应该怎么改写代码呢？</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span>)<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
-<p>或者可以用另一个办法</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>  &#125;, <span class="hljs-number">1000</span>, i)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
-<p>还有一个最简单得办法</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;<br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br></code></pre></td></tr></table></figure>
-<p>以上的几个方法都可以达到我们想要得结果</p>
-<p>现在如果我们想要输出得结果为：0-&gt;1-&gt;2-&gt;3-&gt;4-&gt;5,那么我们应该怎么改写呢</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">j</span>)</span>&#123;<br>    setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>    &#125;, <span class="hljs-number">1000</span> * j)<br>  &#125;)(i)<br>&#125;<br>setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;, <span class="hljs-number">1000</span> * i)<br></code></pre></td></tr></table></figure>
-<p>这是最简单直接得方法，我们还可以使用异步得Promise来完成</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  (<span class="hljs-function">(<span class="hljs-params">j</span>) =&gt;</span> &#123;<br>    tasks.push(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>      setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, j)<br>        resolve()<br>      &#125;, <span class="hljs-number">1000</span> * j)<br>    &#125;))<br>  &#125;)(i)<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
-
-<p>以上的代码可以简写为下面这种方式</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> tasks = []<br><span class="hljs-keyword">const</span> output = <span class="hljs-function">(<span class="hljs-params">i</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>    resolve()<br>  &#125;, <span class="hljs-number">1000</span> * i)<br> &#125;)<br><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>  tasks.push(output(i))<br>&#125;<br><span class="hljs-built_in">Promise</span>.all(tasks).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;, <span class="hljs-number">1000</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
-<p>还可以使用async/await来实现</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> sleep = <span class="hljs-function">(<span class="hljs-params">time</span>) =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve</span>) =&gt;</span> &#123;<br>  setTimeout(resolve,time)<br>&#125;)<br>(<span class="hljs-keyword">async</span> () =&gt; &#123;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>    <span class="hljs-keyword">if</span>(i &gt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>    &#125;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>  &#125;<br>  <span class="hljs-keyword">await</span> sleep(<span class="hljs-number">1000</span>)<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>, i)<br>&#125;)()<br></code></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JS基础</category>
-      </categories>
-      <tags>
-        <tag>JS</tag>
       </tags>
   </entry>
 </search>
