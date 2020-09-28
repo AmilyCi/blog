@@ -72,6 +72,101 @@
     
     
     
+    <article id="post-检测数据类型-md" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/blog/2020/09/28/%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-md/"
+    >检测数据类型.md</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/09/28/%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-md/" class="article-date">
+  <time datetime="2020-09-28T13:00:30.000Z" itemprop="datePublished">2020-09-28</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们平时开发的过程中经常会需要检测数据类型，那么JS中检测数据类型的方式有几种呢，它们之间都有什么区别呢，下面就让我们深入的研究一下吧！</p>
+<h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><p>typeof对于原始数据类型来说除了null以外，其它的都能正确检测出来。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-number">11n</span>) <span class="hljs-comment">// "bigint"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-number">11</span>) <span class="hljs-comment">// "bigint"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-string">''</span>) <span class="hljs-comment">// "string"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">undefined</span>) <span class="hljs-comment">// "undefined"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">true</span>) <span class="hljs-comment">// "boolean"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">Symbol</span>()) <span class="hljs-comment">// "symbol"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">null</span>) <span class="hljs-comment">// "object"</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>用 typeof 检测数据类型，结果都会放在字符串中返回来。</p>
+</li>
+<li><p>通过上面的一些例子我们发现， typeof 检测 null 时返回的是 “object” 数据类型，这与我们所预期的结果不太一样。而这是JS历史遗留的问题，我们只要记住用 type 检测原始数据类型会存在这个坑就可以了。</p>
+</li>
+</ul>
+<p>下面我们来看看用 typeof 检测引用数据类型</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> []) <span class="hljs-comment">// "object"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> &#123;&#125;) <span class="hljs-comment">// "object"</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">console</span>.log) <span class="hljs-comment">// "function"</span><br></code></pre></td></tr></table></figure>
+<p>从上面的几个例子我们可以看出来 typeof 检测引用数据类型，除了函数以外，其它的都会返回 “object”</p>
+<p>所以 typeof 并不能准确的判断变量是什么数据类型，但是根据我们实际开发情况也可以选择使用。</p>
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><p>instanceof 的内部机制是通过原型链来进行判断的。用来检测某一个实例是否属于某个类。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params"></span>)</span>&#123;&#125;<br><span class="hljs-keyword">const</span> person = <span class="hljs-keyword">new</span> Person()<br>person <span class="hljs-keyword">instanceof</span> Person <span class="hljs-comment">// true</span><br>person <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br><br><span class="hljs-keyword">const</span> str = <span class="hljs-string">'Hello world'</span><br>str <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">String</span> <span class="hljs-comment">// false</span><br><br><span class="hljs-keyword">const</span> str1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">String</span>(<span class="hljs-string">'hello world'</span>)<br>str1 <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">String</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>通过 instanceof 检测数据类型会返回一个 Boole 值</p>
+</li>
+<li><p>只要在当前实例的原型链上，我们用其检测出来的结果都为true</p>
+</li>
+<li><p>不能用来检测和处理字面量方式创建出来的基本数据类型值</p>
+</li>
+</ul>
+<p>用 instance 检测也不是那么完美，同样我们也可以根据开发需要来进行选择。</p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+</article>
+    
     <article id="post-inherit" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -909,113 +1004,6 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myApply = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)<br>  context[fn] = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">let</span> result<br>  <span class="hljs-comment">// 在处理参数上和 call 有一些区别</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])&#123;<br>    result = context[fn](...arguments[<span class="hljs-number">1</span>])<br>  &#125;<span class="hljs-keyword">else</span> &#123;<br>    result = context[fn]()<br>  &#125;<br>  <span class="hljs-keyword">delete</span> context[fn]<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Alice'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayBye</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">const</span> num = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Bye,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;num&#125;</span>`</span><br>&#125;<br><br>sayBye.myApply(user,[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])  <span class="hljs-comment">// "Bye,Alice,5"</span><br></code></pre></td></tr></table></figure>
 
 <h3 id="实现Bind"><a href="#实现Bind" class="headerlink" title="实现Bind"></a>实现Bind</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myBind = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  <span class="hljs-keyword">const</span> _this = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">F</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-comment">// 如果被当做构造函数调用</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> F)&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> _this(...args, ...arguments)<br>    &#125;<br>    <span class="hljs-keyword">return</span> _this.apply(context, args.concat(...arguments))<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">other</span>(<span class="hljs-params">age, birthday</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-keyword">this</span>.birthday = birthday<br>&#125;<br><br><span class="hljs-keyword">const</span> detail = other.myBind(user,<span class="hljs-number">18</span>)<br>detail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy", age: 18, birthday: 2020&#125;</span><br><br><span class="hljs-keyword">const</span> newDetail = other.myBind(user, <span class="hljs-number">17</span>)<br><span class="hljs-keyword">const</span> detail2 = <span class="hljs-keyword">new</span> newDetail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy"&#125;</span><br><span class="hljs-built_in">console</span>.log(detail2) <span class="hljs-comment">// &#123;age: 17, birthday: 2020&#125;</span><br></code></pre></td></tr></table></figure>
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-  
-  
-
-</article>
-    
-    <article id="post-typeof" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/23/typeof/"
-    >检测数据类型的几种方式</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/blog/2020/05/23/typeof/" class="article-date">
-  <time datetime="2020-05-23T05:13:40.000Z" itemprop="datePublished">2020-05-23</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><ul>
-<li><p>typeof 检测基本数据类型，除了 null 以外其它的都可以检测出来，typeof(null) 返回的结果是 “object”。</p>
-</li>
-<li><p>typeof 检测引用数据类型，除了函数以外其它返回的结果都是 “object”。</p>
-</li>
-<li><p>使用 typeof 检测数据类型，返回的结果是字符串包含着对应的数据类型。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">typeof</span>(<span class="hljs-literal">null</span>); <span class="hljs-comment">// "object"</span><br><br><span class="hljs-keyword">typeof</span>(<span class="hljs-string">"2"</span>); <span class="hljs-comment">// "string"</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><ul>
-<li><p>instanceof 检测某一个实例是否属于某个类。</p>
-</li>
-<li><p>不能用来检测和处理字面量方式创建出来的基本数据类型值。</p>
-</li>
-<li><p>instanceof 的特性：只要在当前实例的原型链上，我们用其检测出来的结果都是true。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Object</span>()<br><br>obj <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><ul>
-<li><p>作用和 instanceof 非常的相似。</p>
-</li>
-<li><p>constructor 可以处理基本数据类型的检测。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> a = <span class="hljs-number">111</span>;<br><span class="hljs-keyword">const</span> b = &#123;&#125;;<br>a.constructor === <span class="hljs-built_in">Number</span>; <span class="hljs-comment">// true</span><br>b.constructor === <span class="hljs-built_in">Object</span>; <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><ul>
-<li><p>最准确常用的方式。</p>
-</li>
-<li><p>第一个object代表当前实例是对象数据类型的（这个是固定死的）第二个Object，代表的是obj所属的类是Object。</p>
-</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">'111'</span>); <span class="hljs-comment">// "[object String]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call([]); <span class="hljs-comment">// "[object Array]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>&#123;&#125;); <span class="hljs-comment">// "[object Function]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">111</span>); <span class="hljs-comment">// "[object Number]"</span><br><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>); <span class="hljs-comment">//"[object Null]"</span><br></code></pre></td></tr></table></figure>
-
-
       
       <!-- reward -->
       
