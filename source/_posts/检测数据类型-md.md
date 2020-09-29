@@ -58,3 +58,39 @@ str1 instanceof String // true
 - 不能用来检测和处理字面量方式创建出来的基本数据类型值
 
 用 instance 检测也不是那么完美，同样我们也可以根据开发需要来进行选择。
+
+### constructor
+
+constructor 是利用构造函数来检测数据类型的，但是对于 null 和 undefined 是检测不出来的。
+
+```js
+const str = ''
+str.constructor === String // true
+
+const num = 2
+num.constructor === Number // true
+
+null.constructor === Null // Uncaught TypeError: Cannot read property 'constructor' of null
+
+const obj = {}
+obj.constructor === Object // true
+```
+- constructor 和 instanceof 的功能差不多
+
+- constructor 可以处理基本类型的检测
+
+### Object.prototype.toString.call()
+
+```js
+Object.prototype.toString.call('') // "[object String]"
+Object.prototype.toString.call({}) // "[object Object]"
+Object.prototype.toString.call(123) // "[object Number]"
+Object.prototype.toString.call(null) // "[object Null]"
+Object.prototype.toString.call(undefined) // "[object Undefined]"
+Object.prototype.toString.call(console.log) // "[object Function]"
+```
+- 这是到目前为止检测数据类型最准确的一种方式
+
+- 检测结果的第一个 object 代表当前实例是对象数据类型的（这个是固定死的），第二个值是我们所要检测的数据类型。
+
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;以上4种就是项目中我们可能会用到的检测数据类型的方法。
