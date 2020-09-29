@@ -11,11 +11,11 @@ categories:
 let a = 3;
 function father(x){
   let b = 1 + x;
-  return (frunction(){
-    console.log(b)
+  return (function(){
+    console.log('b', b) // b 6
   })()
 }
-console.log(a)
+console.log('a', a) // a 3
 father(5)
 ```
 这段代码中，我们就可以在全局作用域中获取函数作用域中的变量b了。
