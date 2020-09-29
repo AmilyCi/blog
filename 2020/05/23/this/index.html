@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">115</span>
+            <span class="post-count">303</span>
         </span>
     </span>
 
@@ -103,20 +103,39 @@
 
       
       <ul>
-<li><p>在构造函数中，this 指向 new 出来的实例本身。</p>
-</li>
-<li><p>在事件中，this 指向触发这个事件的对象。</p>
-</li>
-<li><p>this 指向函数的直接调用者。</p>
-</li>
-<li><p>自执行函数中的 this 永远都是 window。</p>
-</li>
-<li><p>函数执行，首先看函数前面是否有”.”，有的话，”.”前面是谁 this 就是谁，没有的话，this 就是 window。</p>
-</li>
-<li><p>箭头函数中的 this 取决于包裹箭头函数的第一个普通函数 this。</p>
-</li>
+<li>在构造函数中，this 指向 new 出来的实例本身。</li>
 </ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params">name, age</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'this:'</span>, <span class="hljs-keyword">this</span>)<br>&#125;<br><span class="hljs-keyword">const</span> person = <span class="hljs-keyword">new</span> Person(<span class="hljs-string">'Lucy'</span>, <span class="hljs-number">18</span>) <br><span class="hljs-comment">// this: Person &#123;name: "Lucy", age: 18&#125;</span><br></code></pre></td></tr></table></figure>
 
+<ul>
+<li>在事件中，this 指向触发这个事件的对象。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"btn"</span>&gt;</span>按钮<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> oBtn = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'btn'</span>)<br>oBtn.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>)  <span class="hljs-comment">// btn</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>this 指向函数的直接调用者。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getName</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>  &#125;<br>&#125;<br><br>getName(<span class="hljs-string">'AmilyCi'</span>)() <span class="hljs-comment">// "AmilyCi"</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>自执行函数中的 this 永远都是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>)<br>&#125;)()   <span class="hljs-comment">// window</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>函数执行，首先看函数前面是否有”.”，有的话，”.”前面是谁 this 就是谁，没有的话，this 就是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  firstName: <span class="hljs-string">'John'</span>,<br>  lastName: <span class="hljs-string">'Dave'</span>,<br>  getFullName()&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName + <span class="hljs-string">' '</span> + <span class="hljs-keyword">this</span>.lastName<br>  &#125;<br>&#125;<br>user.getFullName() <span class="hljs-comment">// "John Dave"</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>箭头函数中的 this 取决于包裹箭头函数的第一个普通函数 this。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getName</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.name)<br>    &#125;<br>  &#125;<br>&#125;<br>getName(<span class="hljs-string">'AmilyCi'</span>)()() <span class="hljs-comment">// AmilyCi</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>对于像 call,apply,bind 这种可以改变 this 指向的函数，this 取决于第一个参数，第一个参数为空的话，那么 this 就是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  firstName: <span class="hljs-string">'John'</span>,<br>  lastName: <span class="hljs-string">'Smith'</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFullName</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName + <span class="hljs-string">' '</span> + <span class="hljs-keyword">this</span>.lastName<br>&#125;<br>getFullName.call(user) <span class="hljs-comment">// "John Smith"</span><br></code></pre></td></tr></table></figure>
       
       <!-- reward -->
       
