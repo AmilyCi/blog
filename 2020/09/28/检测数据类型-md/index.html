@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">502</span>
+            <span class="post-count">728</span>
         </span>
     </span>
 
@@ -79,7 +79,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">2 分钟</span>
         </span>
     </span>
 </div>
@@ -128,6 +128,22 @@
 </li>
 </ul>
 <p>用 instance 检测也不是那么完美，同样我们也可以根据开发需要来进行选择。</p>
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><p>constructor 是利用构造函数来检测数据类型的，但是对于 null 和 undefined 是检测不出来的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> str = <span class="hljs-string">''</span><br>str.constructor === <span class="hljs-built_in">String</span> <span class="hljs-comment">// true</span><br><br><span class="hljs-keyword">const</span> num = <span class="hljs-number">2</span><br>num.constructor === <span class="hljs-built_in">Number</span> <span class="hljs-comment">// true</span><br><br><span class="hljs-literal">null</span>.constructor === Null <span class="hljs-comment">// Uncaught TypeError: Cannot read property 'constructor' of null</span><br><br><span class="hljs-keyword">const</span> obj = &#123;&#125;<br>obj.constructor === <span class="hljs-built_in">Object</span> <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>constructor 和 instanceof 的功能差不多</p>
+</li>
+<li><p>constructor 可以处理基本类型的检测</p>
+</li>
+</ul>
+<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-string">''</span>) <span class="hljs-comment">// "[object String]"</span><br><span class="hljs-built_in">Object</span>.prototype.toString.call(&#123;&#125;) <span class="hljs-comment">// "[object Object]"</span><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-number">123</span>) <span class="hljs-comment">// "[object Number]"</span><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">null</span>) <span class="hljs-comment">// "[object Null]"</span><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-literal">undefined</span>) <span class="hljs-comment">// "[object Undefined]"</span><br><span class="hljs-built_in">Object</span>.prototype.toString.call(<span class="hljs-built_in">console</span>.log) <span class="hljs-comment">// "[object Function]"</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>这是到目前为止检测数据类型最准确的一种方式</p>
+</li>
+<li><p>检测结果的第一个 object 代表当前实例是对象数据类型的（这个是固定死的），第二个值是我们所要检测的数据类型。</p>
+</li>
+</ul>
+<p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;以上4种就是项目中我们可能会用到的检测数据类型的方法。</p>
 
       
       <!-- reward -->
