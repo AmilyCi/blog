@@ -72,6 +72,101 @@
     
     
     
+    <article id="post-深浅拷贝" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/blog/2020/09/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"
+    >深浅拷贝</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/09/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/" class="article-date">
+  <time datetime="2020-09-29T09:28:44.000Z" itemprop="datePublished">2020-09-29</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;在我们开发过程中，会遇到这样一个问题，我们想要复制一个对象给另一个变量，但是如果单纯的变量赋值，那么我们修改原来的对象的属性值会导致新赋值的这个对象属性值也跟着改变，这是因为引用类型赋值存储的是引用地址，这两个变量其实引用的同一个指针地址，所以修改对象的属性值，两个变量里的属性都会跟着改变。下面就让我们看看深浅拷贝如何解决这类问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span>,<br>  age: <span class="hljs-number">20</span><br>&#125;<br><span class="hljs-keyword">let</span> person = user<br>user.name = <span class="hljs-string">'Lucy'</span><br><span class="hljs-built_in">console</span>.log(person.name) <span class="hljs-comment">// Lucy</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span>,<br>  age: <span class="hljs-number">20</span><br>&#125;<br><span class="hljs-keyword">let</span> clone = &#123;&#125;<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> user)&#123;<br>  clone[key] = user[key]<br>&#125;<br>clone.name = <span class="hljs-string">'Lucy'</span><br><span class="hljs-built_in">console</span>.log(user.name) <span class="hljs-comment">// John</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span>,<br>  age: <span class="hljs-number">20</span><br>&#125;<br><span class="hljs-keyword">let</span> person = <span class="hljs-built_in">Object</span>.assign(&#123;&#125;, user)<br>user.name = <span class="hljs-string">'Lucy'</span><br><span class="hljs-built_in">console</span>.log(person.name) <span class="hljs-comment">// John</span><br></code></pre></td></tr></table></figure>
+
+<p>我们发现，利用 Object.assign() 还有循环我们可以解决对象里面的属性共享的问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span>,<br>  age: <span class="hljs-number">20</span>,<br>  likeSports: [<span class="hljs-string">'swimming'</span>, <span class="hljs-string">'basketBall'</span>],<br>  child: &#123;<br>    name: <span class="hljs-string">'mini'</span>,<br>    age: <span class="hljs-number">2</span>,<br>    sex: <span class="hljs-string">'girl'</span><br>  &#125;<br>&#125;<br><span class="hljs-keyword">let</span> person = <span class="hljs-built_in">Object</span>.assign(&#123;&#125;, user)<br>user.likeSports.push(<span class="hljs-string">'shopping'</span>)<br>user.child.age = <span class="hljs-number">3</span><br><span class="hljs-built_in">console</span>.log(person.likeSports) <span class="hljs-comment">// ["swimming", "basketBall", "shopping"]</span><br><span class="hljs-built_in">console</span>.log(person.child.age) <span class="hljs-comment">// 3</span><br></code></pre></td></tr></table></figure>
+<p>当对象属性值为引用类型时，我们改变其值，还是会存在属性值共享的问题。<br>这种只解决了一层拷贝的问题就是浅拷贝。</p>
+<h3 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h3><p>深拷贝就可以解决多层引用类型的拷贝，我们可以用 JSON.parse(JSON.stringify(object)) 来解决</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span>,<br>  child: &#123;<br>    name: <span class="hljs-string">'mini'</span>,<br>    age: <span class="hljs-number">2</span><br>  &#125;<br>&#125;<br><span class="hljs-keyword">let</span> person = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">JSON</span>.stringify(user))<br>user.child.age = <span class="hljs-number">3</span><br><span class="hljs-built_in">console</span>.log(person.child.age) <span class="hljs-comment">// 2</span><br></code></pre></td></tr></table></figure>
+<p>可是，这个方法也是不完美的，它有局限性</p>
+<ul>
+<li>会忽略 undefined 和 Symbol</li>
+<li>不能序列化函数</li>
+<li>不能解决循环引用对象</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> obj = &#123;<br>  a: <span class="hljs-number">1</span>,<br>  b: &#123;<br>    c: <span class="hljs-number">2</span>,<br>    d: <span class="hljs-number">3</span><br>  &#125;<br>&#125;<br>obj.c = obj.b<br>obj.e = obj.a<br>obj.b.c = obj.c<br>obj.b.d = obj.b<br>obj.b.e = obj.b.c<br><span class="hljs-keyword">let</span> newObj = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">JSON</span>.stringify(obj))<br><span class="hljs-built_in">console</span>.log(newObj)<br><br><span class="hljs-comment">// VM3724:13 Uncaught TypeError: Converting circular structure to JSON</span><br><span class="hljs-comment">//     --&gt; starting at object with constructor 'Object'</span><br><span class="hljs-comment">//     --- property 'c' closes the circle</span><br><span class="hljs-comment">//     at JSON.stringify (&lt;anonymous&gt;)</span><br><span class="hljs-comment">//     at &lt;anonymous&gt;:13:30</span><br></code></pre></td></tr></table></figure>
+<p>如果这样循环引用，就会报错。</p>
+<p>在遇到 Symbol、undefined 的时候，该对象也不能正常的序列化</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span>,<br>  age: <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">20</span>),<br>  like: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;&#125;,<br>  sex: <span class="hljs-literal">undefined</span><br>&#125;<br><span class="hljs-keyword">let</span> person = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">JSON</span>.stringify(user))<br><span class="hljs-built_in">console</span>.log(person) <span class="hljs-comment">// &#123;name: "Lucy"&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>上面这段代码最后我们只拷贝过来 name 属性，其它的都被忽略了</p>
+<h3 id="实现一个简单的深拷贝"><a href="#实现一个简单的深拷贝" class="headerlink" title="实现一个简单的深拷贝"></a>实现一个简单的深拷贝</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deepClone</span>(<span class="hljs-params">obj</span>)</span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isObject</span>(<span class="hljs-params">o</span>)</span>&#123;<br>    <span class="hljs-keyword">return</span> ((<span class="hljs-keyword">typeof</span> o == <span class="hljs-string">'object'</span> || <span class="hljs-keyword">typeof</span> o == <span class="hljs-string">'function'</span>) &amp;&amp; o !== <span class="hljs-literal">null</span>)<br>  &#125;<br>  <span class="hljs-keyword">if</span>(!isObject(obj))&#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'不是一个对象'</span>)<br>  &#125;<br>  <span class="hljs-keyword">let</span> isArray = <span class="hljs-built_in">Array</span>.isArray(obj)<br>  <span class="hljs-keyword">let</span> newObj = isArray? [...obj] : &#123;...obj&#125;<br>  <span class="hljs-built_in">Reflect</span>.ownKeys(newObj).forEach(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;<br>    newObj[key] = isObject(obj[key])? deepClone(obj[key]) : obj[key]<br>  &#125;)<br>  <span class="hljs-keyword">return</span> newObj<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span>,<br>  age: <span class="hljs-number">20</span>,<br>  child: &#123;<br>    name: <span class="hljs-string">'mini'</span>,<br>    likeFood: [<span class="hljs-string">'banana'</span>, <span class="hljs-string">'apple'</span>],<br>    sex: <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'girl'</span>),<br>    can: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;&#125;,<br>    hobby: <span class="hljs-literal">undefined</span><br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> person = deepClone(user)<br><br>user.child.likeFood.push(<span class="hljs-string">'pear'</span>)<br><span class="hljs-built_in">console</span>.log(person.child.likeFood) <span class="hljs-comment">// ["banana", "apple"]</span><br></code></pre></td></tr></table></figure>
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+</article>
+    
     <article id="post-检测数据类型-md" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -953,92 +1048,6 @@
       
       <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;首先在地址栏中输入 url 地址，浏览器先查找自己本地的 DNS 记录找到对应的 IP 地址，如果本地没有找到就去 DNS服务器上查找，获取 IP 地址后开始建立 TCP 连接遵循三次握手就可以获取数据，浏览器开始解析 Html 构建 DOM 树，并行请求 css/image/js，CSS 文件下载完成，开始构建 CSS 树，CSS 树构建完成后和 DOM 树一起生成渲染树，计算出每个节点在屏幕中的位置，通过显卡把页面画到屏幕上。</p>
 
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-  
-  
-
-</article>
-    
-    <article id="post-call" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/23/call/"
-    >call、apply、bind</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/blog/2020/05/23/call/" class="article-date">
-  <time datetime="2020-05-23T06:31:09.000Z" itemprop="datePublished">2020-05-23</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h3 id="三者之间的区别"><a href="#三者之间的区别" class="headerlink" title="三者之间的区别"></a>三者之间的区别</h3><ul>
-<li><p>call、apply、bind 都是用来改变 this 关键字的。</p>
-</li>
-<li><p>call 和 apply 的用法是一样的，只不过在传参的时候，call 是一个一个的传，而 apply 是放在一个数组中传递。</p>
-</li>
-<li><p>bind 方法在 IE6~8 下不兼容，在 call 和 apply 中改变 this 关键字和执行 fn 一起完成了，而在 bind 中只是改变了 this 关键字并且传参，但是 fn 并没有执行，执行 bind 会有一个返回值，而这个返回值就是我们把 fn 的 this 改变后的那个结果，所以 bind 只是对 fn 进行了预处理</p>
-</li>
-</ul>
-<h3 id="实现call"><a href="#实现call" class="headerlink" title="实现call"></a>实现call</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myCall = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;  <span class="hljs-comment">// 在函数的原型上绑定一个我们自定义的函数</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;  <span class="hljs-comment">// 如果调用这个方法不是函数数据类型，那么就抛出一个错误</span><br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 防止对象上有fn这个属性，被我们覆盖</span><br>  context[fn] = <span class="hljs-keyword">this</span>  <span class="hljs-comment">// 把函数作为对象的一个属性</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)  <span class="hljs-comment">// 获取传进来的参数</span><br>  <span class="hljs-keyword">const</span> result = context[fn](...args)  <span class="hljs-comment">// 将参数传入对象这个函数中，并执行返回结果</span><br>  <span class="hljs-keyword">delete</span> context[fn]  <span class="hljs-comment">// 删除对象这个函数属性</span><br>  <span class="hljs-keyword">return</span> result   <span class="hljs-comment">// 返回结果</span><br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'John'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayHi</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> sum = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Hi,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;sum&#125;</span>`</span><br>&#125;<br><br>sayHi.myCall(user,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)  <span class="hljs-comment">// "Hi,John,3"</span><br></code></pre></td></tr></table></figure>
-
-<h2 id="实现apply"><a href="#实现apply" class="headerlink" title="实现apply"></a>实现apply</h2><ul>
-<li>apply 的实现方法其实和 call 基本一样，唯一的区别就是在传参时的处理，下面我们就看一下 apply 的实现大体思路</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myApply = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  context = context || <span class="hljs-built_in">window</span><br>  <span class="hljs-keyword">const</span> fn = <span class="hljs-built_in">Symbol</span>(<span class="hljs-number">1</span>)<br>  context[fn] = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">let</span> result<br>  <span class="hljs-comment">// 在处理参数上和 call 有一些区别</span><br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>])&#123;<br>    result = context[fn](...arguments[<span class="hljs-number">1</span>])<br>  &#125;<span class="hljs-keyword">else</span> &#123;<br>    result = context[fn]()<br>  &#125;<br>  <span class="hljs-keyword">delete</span> context[fn]<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Alice'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayBye</span>(<span class="hljs-params">a,b</span>)</span>&#123;<br>  <span class="hljs-keyword">const</span> num = a + b<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Bye,<span class="hljs-subst">$&#123;<span class="hljs-keyword">this</span>.name&#125;</span>,<span class="hljs-subst">$&#123;num&#125;</span>`</span><br>&#125;<br><br>sayBye.myApply(user,[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])  <span class="hljs-comment">// "Bye,Alice,5"</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="实现Bind"><a href="#实现Bind" class="headerlink" title="实现Bind"></a>实现Bind</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-built_in">Function</span>.prototype.myBind = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">context</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span> !== <span class="hljs-string">'function'</span>)&#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Error'</span>)<br>  &#125;<br>  <span class="hljs-keyword">const</span> _this = <span class="hljs-keyword">this</span><br>  <span class="hljs-keyword">const</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">F</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-comment">// 如果被当做构造函数调用</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> F)&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> _this(...args, ...arguments)<br>    &#125;<br>    <span class="hljs-keyword">return</span> _this.apply(context, args.concat(...arguments))<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> user = &#123;<br>  name: <span class="hljs-string">'Lucy'</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">other</span>(<span class="hljs-params">age, birthday</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-keyword">this</span>.birthday = birthday<br>&#125;<br><br><span class="hljs-keyword">const</span> detail = other.myBind(user,<span class="hljs-number">18</span>)<br>detail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy", age: 18, birthday: 2020&#125;</span><br><br><span class="hljs-keyword">const</span> newDetail = other.myBind(user, <span class="hljs-number">17</span>)<br><span class="hljs-keyword">const</span> detail2 = <span class="hljs-keyword">new</span> newDetail(<span class="hljs-number">2020</span>)<br><span class="hljs-built_in">console</span>.log(user) <span class="hljs-comment">// &#123;name: "Lucy"&#125;</span><br><span class="hljs-built_in">console</span>.log(detail2) <span class="hljs-comment">// &#123;age: 17, birthday: 2020&#125;</span><br></code></pre></td></tr></table></figure>
       
       <!-- reward -->
       
