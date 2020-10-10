@@ -161,6 +161,44 @@ console.log(person1.name) // "Keven"
 console.log(person1.getName()) // Keven
 console.log(person1.getAge()) // 13
 ```
+
+```js
+function Parent(name){
+  this.name = name
+  this.likeSports = ['badminton', 'basketball', 'swimming']
+}
+Parent.prototype.getName = function(){
+  return this.name
+}
+function Child(name, age){
+  Parent.call(this, name)
+  this.age = age
+}
+Child.prototype = Object.create(Parent.prototype, {
+  constructor: {
+    value: Child,
+    enumerable: false,
+    configurable: true,
+    writable: true
+  }
+})
+Child.prototype.getAge = function(){
+  return this.age
+}
+
+let person1 = new Child('Keven',13);
+let person2 = new Child('Lucy',15);
+
+person1.likeSports.push('shopping')
+
+console.log(person1.likeSports) // ["badminton", "basketball", "swimming", "shopping"]
+console.log(person2.likeSports) // ["badminton", "basketball", "swimming"]
+console.log(person1.name)  // Keven
+console.log(person1.getName()) // Keven
+console.log(person1.getAge()) //13
+
+```
+
 解决父类被调用两次的情况，这是最常用的方式
 
 ### 5、class继承

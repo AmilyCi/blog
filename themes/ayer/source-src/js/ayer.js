@@ -171,6 +171,4 @@
 //     ayerNameStyle,
 //     ayerNameStr
 //   );
-// })(jQuery);
-
-
+})(jQuery);
