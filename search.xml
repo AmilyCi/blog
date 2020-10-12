@@ -407,6 +407,13 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">debounce</span>(<span class="hljs-params">fn, wait, immediate</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> timer<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-keyword">const</span> context = <span class="hljs-keyword">this</span><br>    <span class="hljs-keyword">const</span> arg = <span class="hljs-built_in">arguments</span><br>    <span class="hljs-keyword">if</span>(timer) clearTimeout(timer)<br>    <span class="hljs-keyword">if</span>(immediate)&#123;<br>      <span class="hljs-keyword">const</span> callNow = !timer<br>      timer = setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>        timer = <span class="hljs-literal">null</span><br>      &#125;, wait)<br>      <span class="hljs-keyword">if</span>(callNow) fn.apply(context, arg)<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>      timer = setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>        fn.apply(context, arg)<br>      &#125;, wait)<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 print 事件</p>
+<ul>
+<li>应用场景：<ul>
+<li>按钮提交：防止多次提交，只执行最后一次得提交</li>
+<li>搜索框联想：防止联想发送请求，只发送最后一次</li>
+</ul>
+</li>
+</ul>
 <h3 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的节流就是在高频的触发某个行为时，我们设置一个规定的时间，在该时间内只会执行一次，节流会稀释函数执行的频率。</p>
 <blockquote>
 <p>简述：单位时间内多次触发只会执行一次</p>
@@ -425,6 +432,13 @@
 </ul>
 <figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">throttle</span>(<span class="hljs-params">fn, wait</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> timer<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-keyword">const</span> context = <span class="hljs-keyword">this</span><br>    <span class="hljs-keyword">const</span> arg = <span class="hljs-built_in">arguments</span><br>    <span class="hljs-keyword">if</span>(!timer)&#123;<br>      timer = setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>        timer = <span class="hljs-literal">null</span><br>        fn.apply(context, arg)<br>      &#125;, wait)<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<ul>
+<li>应用场景：<ul>
+<li>拖拽：固定时间内只执行一次，防止超高频次触发位置变动</li>
+<li>缩放：监控浏览器resize</li>
+</ul>
+</li>
+</ul>
 <h3 id="节流和防抖之间的区别"><a href="#节流和防抖之间的区别" class="headerlink" title="节流和防抖之间的区别"></a>节流和防抖之间的区别</h3><ul>
 <li>节流是不管触发事件多频繁，都会在一定的时间内执行一次，而防抖会在频繁触发的最后一次才执行</li>
 </ul>
@@ -533,9 +547,11 @@
 </ul>
 <h3 id="3、实现一个函数-可以计算出x的n次方"><a href="#3、实现一个函数-可以计算出x的n次方" class="headerlink" title="3、实现一个函数,可以计算出x的n次方"></a>3、实现一个函数,可以计算出x的n次方</h3><ul>
 <li>方案一：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pow</span>(<span class="hljs-params">x, n</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> result = <span class="hljs-number">1</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; n; i++)&#123;<br>    result *= x<br>  &#125;<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br>pow(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">//8</span><br></code></pre></td></tr></table></figure></li>
-<li>方案二：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pow</span>(<span class="hljs-params">x, n</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(n == <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-keyword">return</span> x<br>  &#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">return</span> x * pow(x, n - <span class="hljs-number">1</span>)<br>  &#125;<br>&#125;<br>pow(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">//8</span><br></code></pre></td></tr></table></figure></li>
+<li>方案二：<figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pow</span>(<span class="hljs-params">x, n</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(n == <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-keyword">return</span> x<br>  &#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">return</span> x * pow(x, n - <span class="hljs-number">1</span>)<br>  &#125;<br>&#125;<br>pow(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">//8</span><br></code></pre></td></tr></table></figure>
+
+</li>
 </ul>
-]]></content>
+<h3 id="4、写一个mySetInterval-fn-a-b-，每次间隔-a-a-b-a-2b-…-a-nb-的时间-然后写一个myClear，停止上面的-mySetInterval。"><a href="#4、写一个mySetInterval-fn-a-b-，每次间隔-a-a-b-a-2b-…-a-nb-的时间-然后写一个myClear，停止上面的-mySetInterval。" class="headerlink" title="4、写一个mySetInterval(fn, a, b)，每次间隔 a, a + b, a + 2b, … , a + nb 的时间, 然后写一个myClear，停止上面的 mySetInterval。"></a>4、写一个mySetInterval(fn, a, b)，每次间隔 a, a + b, a + 2b, … , a + nb 的时间, 然后写一个myClear，停止上面的 mySetInterval。</h3><figure class="highlight js"><table><tr><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mySetInterval</span>(<span class="hljs-params">fn, a, b</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.a = a<br>  <span class="hljs-keyword">this</span>.b = b<br>  <span class="hljs-keyword">this</span>.fn = fn<br>  <span class="hljs-keyword">this</span>.time = <span class="hljs-number">0</span><br>  <span class="hljs-keyword">this</span>.timer = <span class="hljs-number">-1</span><br>  <span class="hljs-keyword">this</span>.start = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">this</span>.timer = setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      fn()<br>      <span class="hljs-keyword">this</span>.time ++<br>      <span class="hljs-keyword">this</span>.start()<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a + <span class="hljs-keyword">this</span>.time * <span class="hljs-keyword">this</span>.b)<br>    &#125;, <span class="hljs-keyword">this</span>.a + <span class="hljs-keyword">this</span>.time * <span class="hljs-keyword">this</span>.b)<br>  &#125;<br>  <span class="hljs-keyword">this</span>.stop = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    clearInterval(<span class="hljs-keyword">this</span>.timer)<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">print</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'123'</span>)<br>&#125;<br><span class="hljs-keyword">const</span> my = <span class="hljs-keyword">new</span> mySetInterval(print, <span class="hljs-number">1000</span>, <span class="hljs-number">2000</span>)<br>my.start()<br>my.stop()<br></code></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>前端技术</category>
       </categories>
