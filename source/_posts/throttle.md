@@ -9,7 +9,9 @@ categories:
 ### 防抖
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的防抖就是在一定时间内如果某个事件被高频的触发,那么我们就延时让他执行，比如，我们可以设置一个定时器，时间为3s，当我们第一次触发行为时，计时器开始计时，如果在倒计时时间内没有再次触发行为，那么计时结束后会执行函数，但是在计时时间内如果又触发了该行为，则计时器开始重新计时，以此类推，其实防抖就是在触发高频率的行为时只执行一次函数，这样通过控制次数来提高性能。
 
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做
+> 简述：事件触发n秒后被执行回调，如果n秒内再次触发，则重新计时
+
+假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做
 
 ```js
   function debounce(fn, wait) {
@@ -26,17 +28,19 @@ categories:
       }
     }
   }
-  function prin(){
+  function print(){
     console.log('我是防抖')
   }
-  window.addEventListener('scroll', debounce(prin, 1000))
+  window.addEventListener('scroll', debounce(print, 1000))
 ```
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 prin 事件
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 print 事件
 
 ### 节流
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;函数的节流就是在高频的触发某个行为时，我们设置一个规定的时间，在该时间内只会执行一次，节流会稀释函数执行的频率。
 
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们还是用上述的滚动事件来举例，代码如下
+> 简述：单位时间内多次触发只会执行一次
+
+我们还是用上述的滚动事件来举例，代码如下
 
 ```js
 function throttle(fn, wait) {
@@ -57,8 +61,11 @@ function throttle(fn, wait) {
     )
   }
 }
-function prin(){
+function print(){
   console.log('我是节流')
 }
-window.addEventListener('scroll', throttle(prin, 1000))
+window.addEventListener('scroll', throttle(print, 1000))
 ```
+
+### 节流和防抖之间的区别
+
