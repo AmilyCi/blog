@@ -90,3 +90,32 @@ function pow(x, n) {
 }
 pow(2, 3) //8
 ```
+
+### 4、写一个mySetInterval(fn, a, b)，每次间隔 a, a + b, a + 2b, ... , a + nb 的时间, 然后写一个myClear，停止上面的 mySetInterval。
+
+```js
+function mySetInterval(fn, a, b){
+  this.a = a
+  this.b = b
+  this.fn = fn
+  this.time = 0
+  this.timer = -1
+  this.start = () => {
+    this.timer = setInterval(function(){
+      fn()
+      this.time ++
+      this.start()
+      console.log(this.a + this.time * this.b)
+    }, this.a + this.time * this.b)
+  }
+  this.stop = () => {
+    clearInterval(this.timer)
+  }
+}
+function print(){
+  console.log('123')
+}
+const my = new mySetInterval(print, 1000, 2000)
+my.start()
+my.stop()
+```
