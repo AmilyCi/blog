@@ -13,6 +13,8 @@ categories:
 
 假如我们有一个滚动事件，我们想监听滚动行为来执行函数，用防抖可以这样来做
 
+- 简易版
+
 ```js
   function debounce(fn, wait) {
     let timeout
@@ -33,6 +35,33 @@ categories:
   }
   window.addEventListener('scroll', debounce(print, 1000))
 ```
+
+- 立即执行版
+
+如果希望触发之后立即执行函数，然后等待n秒后才可以重新触发执行，并且在n秒内再次触发会重新计时n秒
+
+```js
+function debounce(fn, wait, immediate){
+  let timer
+  return function(){
+    const context = this
+    const arg = arguments
+    if(timer) clearTimeout(timer)
+    if(immediate){
+      const callNow = !timer
+      timer = setTimeout(function(){
+        timer = null
+      }, wait)
+      if(callNow) fn.apply(context, arg)
+    }else {
+      timer = setTimeout(function(){
+        fn.apply(context, arg)
+      }, wait)
+    }
+  }
+}
+```
+
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;这样如果在1s内我们多次触发这个行为，那么计时器会不停的重新计算，直到在1s内我们没有再次触发该行为，就会执行这个 print 事件
 
 ### 节流
@@ -41,6 +70,8 @@ categories:
 > 简述：单位时间内多次触发只会执行一次
 
 我们还是用上述的滚动事件来举例，代码如下
+
+- 方案一
 
 ```js
 function throttle(fn, wait) {
@@ -66,6 +97,42 @@ function print(){
 }
 window.addEventListener('scroll', throttle(print, 1000))
 ```
+- 方案二
+
+```js
+function throttle(fn, wait){
+  let context, arg
+  let previous = 0
+  return function(){
+    let now  = +new Date()
+    context = this
+    arg = arguments
+    if(now - previous > wait){
+      fn.apply(context, arg)
+      previous = now
+    }
+  }
+}
+```
+- 方案三
+
+```js
+function throttle(fn, wait){
+  let timer
+  return function(){
+    const context = this
+    const arg = arguments
+    if(!timer){
+      timer = setTimeout(function(){
+        timer = null
+        fn.apply(context, arg)
+      }, wait)
+    }
+  }
+}
+```
 
 ### 节流和防抖之间的区别
+
+- 节流是不管触发事件多频繁，都会在一定的时间内执行一次，而防抖会在频繁触发的最后一次才执行
 
