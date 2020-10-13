@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    categories |  前端小白菜
+    项目实战 |  前端小白菜
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -38,61 +38,236 @@
   <div id="app">
     <main class="content on">
       <section class="outer">
+  <article id="post-项目实战" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  项目实战
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" class="article-date">
+  <time datetime="2020-10-13T03:28:53.000Z" itemprop="datePublished">2020-10-13</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/%E9%A1%B9%E7%9B%AE/">项目</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">243</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">1 分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="通过权限码来控制动态路由"><a href="#通过权限码来控制动态路由" class="headerlink" title="通过权限码来控制动态路由"></a>通过权限码来控制动态路由</h3><ul>
+<li><p>项目背景：这是一个通过用户登录来获取用户权限路由的一个后台管理系统。它是建立在一个总得后台管理系统下的一个Tab项，需要登录总的后台管理系统之后通过界面上每个后台管理入口来进入我们的这个金币管理系统。每个人登录权限不同，能够看到的页面也就不同。</p>
+</li>
+<li><p>项目思路：在我们登录总的后台管理系统成功之后，会在cookie中存储 userId、 token , 在金币管理系统的 app.vue 中来获取这两个参数，如果没有则让页面跳转到总得后台管理系统登录页，引导用户登录，如果获取到就会调接口拿到该用户下所有权限码。之后我们调用vuex中的方法 generateRoutes ，该方法会调用一个</p>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+      <div id="reward-btn">
+        打赏
+      </div>
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong>
+              本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amilyci.github.io/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
   
-    <h1 class="page-type-title">分类</h1>
-    <!-- <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF/">前端技术</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/">前端构建工具</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/%E9%A1%B9%E7%9B%AE/">项目</a></li></ul> -->
-    <ul class="category-list">
-      
-         
-          <a class="category-list-link" href="/blog/categories/JS基础/" title="JS基础">
-            <li class="category-list-item">
-            JS基础<i>10</i>
-            </li>
-          </a>
-        
-      
-         
-          <a class="category-list-link" href="/blog/categories/前端技术/" title="前端技术">
-            <li class="category-list-item">
-            前端技术<i>2</i>
-            </li>
-          </a>
-        
-      
-         
-          <a class="category-list-link" href="/blog/categories/前端构建工具/" title="前端构建工具">
-            <li class="category-list-item">
-            前端构建工具<i>4</i>
-            </li>
-          </a>
-        
-      
-         
-          <a class="category-list-link" href="/blog/categories/性能优化/" title="性能优化">
-            <li class="category-list-item">
-            性能优化<i>1</i>
-            </li>
-          </a>
-        
-      
-         
-          <a class="category-list-link" href="/blog/categories/网络基础/" title="网络基础">
-            <li class="category-list-item">
-            网络基础<i>3</i>
-            </li>
-          </a>
-        
-      
-         
-          <a class="category-list-link" href="/blog/categories/项目/" title="项目">
-            <li class="category-list-item">
-            项目<i>1</i>
-            </li>
-          </a>
-        
-      
-      </ul>
   
+  <nav class="article-nav">
+    
+    
+      <a href="/blog/2020/09/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">深浅拷贝</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'monsterid',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+  
+  
+
+</article>
 </section>
       <footer class="footer">
   <div class="outer">
@@ -231,6 +406,24 @@
 </script>
 
 
+
+
+<script src="/blog/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 
 
