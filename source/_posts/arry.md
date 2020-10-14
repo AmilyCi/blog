@@ -95,3 +95,11 @@ categories:
 - 都是用来遍历数组每一项。
 
 - map()原来数组不变，forEach()原来得数组改变。
+
+### 类数组转换为数组
+
+- Array.from()
+
+- Array.prototype.slice.call()
+
+- Array.prototype.forEach()
