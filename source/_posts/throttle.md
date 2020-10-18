@@ -19,15 +19,12 @@ categories:
   function debounce(fn, wait) {
     let timeout
     return function () {
-      if(!timeout){
-        let context = this
-        let arg = arguments
-        timeout = setTimeout(() => {
-          fn.apply(context, arg)
-        },wait)
-      }else {
-        clearTimeout(timeout)
-      }
+      let context = this
+      let arg = arguments
+      if(timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        fn.apply(context, arg)
+      },wait)
     }
   }
   function print(){
