@@ -102,12 +102,11 @@ window.addEventListener('scroll', throttle(print, 1000))
 
 ```js
 function throttle(fn, wait){
-  let context, arg
   let previous = 0
   return function(){
     let now  = +new Date()
-    context = this
-    arg = arguments
+    let context = this
+    let arg = arguments
     if(now - previous > wait){
       fn.apply(context, arg)
       previous = now
@@ -121,8 +120,8 @@ function throttle(fn, wait){
 function throttle(fn, wait){
   let timer
   return function(){
-    const context = this
-    const arg = arguments
+    let context = this
+    let arg = arguments
     if(!timer){
       timer = setTimeout(function(){
         timer = null
