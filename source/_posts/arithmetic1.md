@@ -122,6 +122,8 @@ my.stop()
 
 ### 5、计算任意位数的两个正整数字符串之和
 
+- 方法一：
+
 ```js
 function add(a, b){
   let number1, number2, MAX_LENGTH, result = []
@@ -150,5 +152,21 @@ function add(a, b){
     }
   }
   return result.reverse().join('')
+}
+```
+
+- 方法二：
+
+```js
+function add(a, b){
+  let result = '', c = 0
+  a = a.split('')
+  b = b.split('')
+  while(a.length || b.length || c){
+    c += ~~a.pop() + ~~b.pop()
+    result = c % 10 + result
+    c = c > 9
+  }
+  return result
 }
 ```
