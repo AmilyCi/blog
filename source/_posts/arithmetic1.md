@@ -119,3 +119,36 @@ const my = new mySetInterval(print, 1000, 2000)
 my.start()
 my.stop()
 ```
+
+### 5、计算任意位数的两个正整数字符串之和
+
+```js
+function add(a, b){
+  let number1, number2, MAX_LENGTH, result = []
+  if(a.length > b.length){
+    number1 = a.split('').reverse()
+    number2 = b.split('').reverse()
+    MAX_LENGTH = a.length
+  }else {
+    number1 = b.split('').reverse()
+    number2 = a.split('').reverse()
+    MAX_LENGTH = b.length
+  }
+  for (let i = 0;i < MAX_LENGTH; i++){
+    let sum 
+    if(number2[i]){
+      sum = (+number1[i]) + (+number2[i])
+    }else {
+      sum = (+number1[i])
+    }
+    if(result[i]){
+      sum += 1
+    }
+    result[i] = String(sum % 10)
+    if(sum >= 10){
+      result[i+1] = '1'
+    }
+  }
+  return result.reverse().join('')
+}
+```
