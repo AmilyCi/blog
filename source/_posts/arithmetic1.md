@@ -170,3 +170,23 @@ function add(a, b){
   return result
 }
 ```
+
+### 6、给定一个对象，存储了世界富豪的名字(key)和资产(value)，求排行榜（按资产从大到小的富豪名字数组）。譬如输入{bill: 500, sam: 480, roark: 501}，返回['roark', 'bill', 'sam']
+
+```js
+function richRank(obj){
+  let valueSort = Object.values(obj).sort((a,b) => b - a)
+  let richName = []
+  for(let i = 0; i < valueSort.length; i++){
+    Object.keys(obj).map(item => {
+      if(valueSort[i] == obj[item]){
+        richName.push(item)
+      }
+    })
+  }
+  return [...new Set(richName)]
+}
+
+let obj ={bill: 500, sam: 480, roark: 501, dave: 501}
+console.log(richRank(obj))
+```
