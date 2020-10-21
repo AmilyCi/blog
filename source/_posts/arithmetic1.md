@@ -190,3 +190,27 @@ function richRank(obj){
 let obj ={bill: 500, sam: 480, roark: 501, dave: 501}
 console.log(richRank(obj))
 ```
+
+### 7、实现一个函数，判断输入的是否为回文字符串
+
+- 方法一：
+```js
+function plalindrome(str){
+  if (typeof str !== 'string') return false
+  return str.split('').reverse().join('') === str
+}
+```
+
+- 方法二：
+```js
+function plalindrome(str){
+  if(typeof str !== 'string') return false
+  let i = 0, j = str.length - 1
+  while(i < j){
+    if(str.charAt(i) !== str.charAt(j)) return false
+    i++
+    j--
+  }
+  return true
+}
+```
