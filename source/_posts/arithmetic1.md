@@ -214,3 +214,25 @@ function plalindrome(str){
   return true
 }
 ```
+
+### 8、请写一个抽奖程序，已有参与抽奖的员工工号组成的数组staffIds。（规则：同一员工不可重复中奖，每轮执行抽奖程序，入参是本轮要抽取的中奖人数n，将中奖人工号打印出来）
+
+```js
+function shuffle(arr, n){
+  for (let i = arr.length; i > 0; i--){
+    const {index} = randomItem(arr, 0, i);
+    [arr[index], arr[i-1]] = [arr[i-1], arr[index]]
+  }
+  return  arr.slice(0, n)
+}
+function randomItem(arr, from = 0, to = arr.length){
+  const index = random(from, to)
+  return {
+    index,
+    value: arr[index]
+  }
+}
+function random(m, n){
+  return m + Math.floor(Math.random() * n)
+}
+```
