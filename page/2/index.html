@@ -72,6 +72,110 @@
     
     
     
+    <article id="post-this" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/blog/2020/05/23/this/"
+    >this</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/blog/2020/05/23/this/" class="article-date">
+  <time datetime="2020-05-23T07:10:53.000Z" itemprop="datePublished">2020-05-23</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/JS%E5%9F%BA%E7%A1%80/">JS基础</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <ul>
+<li>在构造函数中，this 指向 new 出来的实例本身。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params">name, age</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">this</span>.age = age<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'this:'</span>, <span class="hljs-keyword">this</span>)<br>&#125;<br><span class="hljs-keyword">const</span> person = <span class="hljs-keyword">new</span> Person(<span class="hljs-string">'Lucy'</span>, <span class="hljs-number">18</span>) <br><span class="hljs-comment">// this: Person &#123;name: "Lucy", age: 18&#125;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>在事件中，this 指向触发这个事件的对象。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"btn"</span>&gt;</span>按钮<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> oBtn = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'btn'</span>)<br>oBtn.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>)  <span class="hljs-comment">// btn</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>this 指向函数的直接调用者。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getName</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name<br>  &#125;<br>&#125;<br><br>getName(<span class="hljs-string">'AmilyCi'</span>)() <span class="hljs-comment">// "AmilyCi"</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>自执行函数中的 this 永远都是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>)<br>&#125;)()   <span class="hljs-comment">// window</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>函数执行，首先看函数前面是否有”.”，有的话，”.”前面是谁 this 就是谁，没有的话，this 就是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  firstName: <span class="hljs-string">'John'</span>,<br>  lastName: <span class="hljs-string">'Dave'</span>,<br>  getFullName()&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName + <span class="hljs-string">' '</span> + <span class="hljs-keyword">this</span>.lastName<br>  &#125;<br>&#125;<br>user.getFullName() <span class="hljs-comment">// "John Dave"</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>箭头函数中的 this 取决于包裹箭头函数的第一个普通函数 this。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getName</span>(<span class="hljs-params">name</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.name = name<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.name)<br>    &#125;<br>  &#125;<br>&#125;<br>getName(<span class="hljs-string">'AmilyCi'</span>)()() <span class="hljs-comment">// AmilyCi</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>对于像 call,apply,bind 这种可以改变 this 指向的函数，this 取决于第一个参数，第一个参数为空的话，那么 this 就是 window。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> user = &#123;<br>  firstName: <span class="hljs-string">'John'</span>,<br>  lastName: <span class="hljs-string">'Smith'</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFullName</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName + <span class="hljs-string">' '</span> + <span class="hljs-keyword">this</span>.lastName<br>&#125;<br>getFullName.call(user) <span class="hljs-comment">// "John Smith"</span><br></code></pre></td></tr></table></figure>
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/JS/" rel="tag">JS</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+</article>
+    
     <article id="post-render" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -863,120 +967,6 @@ webpack.config.js<figure class="highlight js"><table><tr><td class="gutter"><pre
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/" rel="tag">webpack</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-  
-  
-
-</article>
-    
-    <article id="post-arithmetic1" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/blog/2020/05/09/arithmetic1/"
-    >常见的算法题</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/blog/2020/05/09/arithmetic1/" class="article-date">
-  <time datetime="2020-05-09T07:35:28.000Z" itemprop="datePublished">2020-05-09</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/%E5%89%8D%E7%AB%AF%E6%8A%80%E6%9C%AF/">前端技术</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h3 id="1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如："><a href="#1、输入是以数字组成的数组，例如-arr-1-2-3-4-9-6-。任务是：找出所有项的和最大的-arr-数组的连续子数组。写出函数-getMaxSubSum-arr-，用其找出并返回最大和。例如：" class="headerlink" title="1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。任务是：找出所有项的和最大的 arr 数组的连续子数组。写出函数 getMaxSubSum(arr)，用其找出并返回最大和。例如："></a>1、输入是以数字组成的数组，例如 arr = [1, -2, 3, 4, -9, 6]。</br>任务是：找出所有项的和最大的 arr 数组的连续子数组。</br>写出函数 getMaxSubSum(arr)，用其找出并返回最大和。</br>例如：</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js">getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">5</span><br>getMaxSubSum([<span class="hljs-number">2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>]) == <span class="hljs-number">6</span><br>getMaxSubSum([<span class="hljs-number">-1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">11</span>]) == <span class="hljs-number">11</span><br>getMaxSubSum([<span class="hljs-number">-2</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]) == <span class="hljs-number">3</span><br>getMaxSubSum([<span class="hljs-number">100</span>, <span class="hljs-number">-9</span>, <span class="hljs-number">2</span>, <span class="hljs-number">-3</span>, <span class="hljs-number">5</span>]) == <span class="hljs-number">100</span><br>getMaxSubSum([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]) == <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
-<ul>
-<li>方案一：需要循环两次<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; arr.length; i++ )&#123;<br>    <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = i; j &lt; arr.length; j++)&#123;<br>      partSum += arr[j]<br>      maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure></li>
-<li>方案二：只需要循环一次，最优解<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMaxSubSum</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> maxSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">let</span> partSum = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> arr)&#123;<br>    partSum += item<br>    maxSum = <span class="hljs-built_in">Math</span>.max(maxSum, partSum)<br>    <span class="hljs-keyword">if</span> (partSum &lt; <span class="hljs-number">0</span>) partSum = <span class="hljs-number">0</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> maxSum<br>&#125;<br></code></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="2、数组去重"><a href="#2、数组去重" class="headerlink" title="2、数组去重"></a>2、数组去重</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">let</span> arr = [<span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Krishna"</span>,<span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Krishna"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">"Hare"</span>, <span class="hljs-string">":-O"</span>, <span class="hljs-number">3</span>, <span class="hljs-number">11</span>, <span class="hljs-number">20</span>, <span class="hljs-number">11</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>]<br>unique(arr) <span class="hljs-comment">// ["Hare", "Krishna", ":-O", 3, 11, 20, 0]</span><br></code></pre></td></tr></table></figure>
-<ul>
-<li>方案一：(因为for循环对数组的每一项都进行了校验，所以仅适用于小型数组)<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">unique</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> result = []<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> arr) &#123;<br>    <span class="hljs-keyword">if</span>(!result.includes(item))&#123;<br>      result.push(item)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre></td></tr></table></figure></li>
-<li>方案二：<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">unique</span>(<span class="hljs-params">arr</span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.form(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>(arr))<br>&#125;<br></code></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="3、实现一个函数-可以计算出x的n次方"><a href="#3、实现一个函数-可以计算出x的n次方" class="headerlink" title="3、实现一个函数,可以计算出x的n次方"></a>3、实现一个函数,可以计算出x的n次方</h3><ul>
-<li>方案一：<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pow</span>(<span class="hljs-params">x, n</span>) </span>&#123;<br>  <span class="hljs-keyword">let</span> result = <span class="hljs-number">1</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; n; i++)&#123;<br>    result *= x<br>  &#125;<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br>pow(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">//8</span><br></code></pre></td></tr></table></figure></li>
-<li>方案二：<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pow</span>(<span class="hljs-params">x, n</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(n == <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-keyword">return</span> x<br>  &#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">return</span> x * pow(x, n - <span class="hljs-number">1</span>)<br>  &#125;<br>&#125;<br>pow(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">//8</span><br></code></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="4、写一个mySetInterval-fn-a-b-，每次间隔-a-a-b-a-2b-…-a-nb-的时间-然后写一个myClear，停止上面的-mySetInterval。"><a href="#4、写一个mySetInterval-fn-a-b-，每次间隔-a-a-b-a-2b-…-a-nb-的时间-然后写一个myClear，停止上面的-mySetInterval。" class="headerlink" title="4、写一个mySetInterval(fn, a, b)，每次间隔 a, a + b, a + 2b, … , a + nb 的时间, 然后写一个myClear，停止上面的 mySetInterval。"></a>4、写一个mySetInterval(fn, a, b)，每次间隔 a, a + b, a + 2b, … , a + nb 的时间, 然后写一个myClear，停止上面的 mySetInterval。</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mySetInterval</span>(<span class="hljs-params">fn, a, b</span>)</span>&#123;<br>  <span class="hljs-keyword">this</span>.a = a<br>  <span class="hljs-keyword">this</span>.b = b<br>  <span class="hljs-keyword">this</span>.fn = fn<br>  <span class="hljs-keyword">this</span>.time = <span class="hljs-number">0</span><br>  <span class="hljs-keyword">this</span>.timer = <span class="hljs-number">-1</span><br>  <span class="hljs-keyword">this</span>.start = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">this</span>.timer = setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>      fn()<br>      <span class="hljs-keyword">this</span>.time ++<br>      <span class="hljs-keyword">this</span>.start()<br>      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a + <span class="hljs-keyword">this</span>.time * <span class="hljs-keyword">this</span>.b)<br>    &#125;, <span class="hljs-keyword">this</span>.a + <span class="hljs-keyword">this</span>.time * <span class="hljs-keyword">this</span>.b)<br>  &#125;<br>  <span class="hljs-keyword">this</span>.stop = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;<br>    clearInterval(<span class="hljs-keyword">this</span>.timer)<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">print</span>(<span class="hljs-params"></span>)</span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'123'</span>)<br>&#125;<br><span class="hljs-keyword">const</span> my = <span class="hljs-keyword">new</span> mySetInterval(print, <span class="hljs-number">1000</span>, <span class="hljs-number">2000</span>)<br>my.start()<br>my.stop()<br></code></pre></td></tr></table></figure>
-
-<h3 id="5、计算任意位数的两个正整数字符串之和"><a href="#5、计算任意位数的两个正整数字符串之和" class="headerlink" title="5、计算任意位数的两个正整数字符串之和"></a>5、计算任意位数的两个正整数字符串之和</h3><ul>
-<li>方法一：</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">a, b</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> number1, number2, MAX_LENGTH, result = []<br>  <span class="hljs-keyword">if</span>(a.length &gt; b.length)&#123;<br>    number1 = a.split(<span class="hljs-string">''</span>).reverse()<br>    number2 = b.split(<span class="hljs-string">''</span>).reverse()<br>    MAX_LENGTH = a.length<br>  &#125;<span class="hljs-keyword">else</span> &#123;<br>    number1 = b.split(<span class="hljs-string">''</span>).reverse()<br>    number2 = a.split(<span class="hljs-string">''</span>).reverse()<br>    MAX_LENGTH = b.length<br>  &#125;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;i &lt; MAX_LENGTH; i++)&#123;<br>    <span class="hljs-keyword">let</span> sum <br>    <span class="hljs-keyword">if</span>(number2[i])&#123;<br>      sum = (+number1[i]) + (+number2[i])<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>      sum = (+number1[i])<br>    &#125;<br>    <span class="hljs-keyword">if</span>(result[i])&#123;<br>      sum += <span class="hljs-number">1</span><br>    &#125;<br>    result[i] = <span class="hljs-built_in">String</span>(sum % <span class="hljs-number">10</span>)<br>    <span class="hljs-keyword">if</span>(sum &gt;= <span class="hljs-number">10</span>)&#123;<br>      result[i+<span class="hljs-number">1</span>] = <span class="hljs-string">'1'</span><br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result.reverse().join(<span class="hljs-string">''</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>方法二：</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">a, b</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> result = <span class="hljs-string">''</span>, c = <span class="hljs-number">0</span><br>  a = a.split(<span class="hljs-string">''</span>)<br>  b = b.split(<span class="hljs-string">''</span>)<br>  <span class="hljs-keyword">while</span>(a.length || b.length || c)&#123;<br>    c += ~~a.pop() + ~~b.pop()<br>    result = c % <span class="hljs-number">10</span> + result<br>    c = c &gt; <span class="hljs-number">9</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="6、给定一个对象，存储了世界富豪的名字-key-和资产-value-，求排行榜（按资产从大到小的富豪名字数组）。譬如输入-bill-500-sam-480-roark-501-，返回-‘roark’-‘bill’-‘sam’"><a href="#6、给定一个对象，存储了世界富豪的名字-key-和资产-value-，求排行榜（按资产从大到小的富豪名字数组）。譬如输入-bill-500-sam-480-roark-501-，返回-‘roark’-‘bill’-‘sam’" class="headerlink" title="6、给定一个对象，存储了世界富豪的名字(key)和资产(value)，求排行榜（按资产从大到小的富豪名字数组）。譬如输入{bill: 500, sam: 480, roark: 501}，返回[‘roark’, ‘bill’, ‘sam’]"></a>6、给定一个对象，存储了世界富豪的名字(key)和资产(value)，求排行榜（按资产从大到小的富豪名字数组）。譬如输入{bill: 500, sam: 480, roark: 501}，返回[‘roark’, ‘bill’, ‘sam’]</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">richRank</span>(<span class="hljs-params">obj</span>)</span>&#123;<br>  <span class="hljs-keyword">let</span> valueSort = <span class="hljs-built_in">Object</span>.values(obj).sort(<span class="hljs-function">(<span class="hljs-params">a,b</span>) =&gt;</span> b - a)<br>  <span class="hljs-keyword">let</span> richName = []<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; valueSort.length; i++)&#123;<br>    <span class="hljs-built_in">Object</span>.keys(obj).map(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> &#123;<br>      <span class="hljs-keyword">if</span>(valueSort[i] == obj[item])&#123;<br>        richName.push(item)<br>      &#125;<br>    &#125;)<br>  &#125;<br>  <span class="hljs-keyword">return</span> [...new <span class="hljs-built_in">Set</span>(richName)]<br>&#125;<br><br><span class="hljs-keyword">let</span> obj =&#123;<span class="hljs-attr">bill</span>: <span class="hljs-number">500</span>, <span class="hljs-attr">sam</span>: <span class="hljs-number">480</span>, <span class="hljs-attr">roark</span>: <span class="hljs-number">501</span>, <span class="hljs-attr">dave</span>: <span class="hljs-number">501</span>&#125;<br><span class="hljs-built_in">console</span>.log(richRank(obj))<br></code></pre></td></tr></table></figure>
-
-<h3 id="7、实现一个函数，判断输入的是否为回文字符串"><a href="#7、实现一个函数，判断输入的是否为回文字符串" class="headerlink" title="7、实现一个函数，判断输入的是否为回文字符串"></a>7、实现一个函数，判断输入的是否为回文字符串</h3><ul>
-<li><p>方法一：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">plalindrome</span>(<span class="hljs-params">str</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> str !== <span class="hljs-string">'string'</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>  <span class="hljs-keyword">return</span> str.split(<span class="hljs-string">''</span>).reverse().join(<span class="hljs-string">''</span>) === str<br>&#125;<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>方法二：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">plalindrome</span>(<span class="hljs-params">str</span>)</span>&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> str !== <span class="hljs-string">'string'</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>  <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, j = str.length - <span class="hljs-number">1</span><br>  <span class="hljs-keyword">while</span>(i &lt; j)&#123;<br>    <span class="hljs-keyword">if</span>(str.charAt(i) !== str.charAt(j)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>    i++<br>    j--<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="8、请写一个抽奖程序，已有参与抽奖的员工工号组成的数组staffIds。（规则：同一员工不可重复中奖，每轮执行抽奖程序，入参是本轮要抽取的中奖人数n，将中奖人工号打印出来）"><a href="#8、请写一个抽奖程序，已有参与抽奖的员工工号组成的数组staffIds。（规则：同一员工不可重复中奖，每轮执行抽奖程序，入参是本轮要抽取的中奖人数n，将中奖人工号打印出来）" class="headerlink" title="8、请写一个抽奖程序，已有参与抽奖的员工工号组成的数组staffIds。（规则：同一员工不可重复中奖，每轮执行抽奖程序，入参是本轮要抽取的中奖人数n，将中奖人工号打印出来）"></a>8、请写一个抽奖程序，已有参与抽奖的员工工号组成的数组staffIds。（规则：同一员工不可重复中奖，每轮执行抽奖程序，入参是本轮要抽取的中奖人数n，将中奖人工号打印出来）</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">shuffle</span>(<span class="hljs-params">arr, n</span>)</span>&#123;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = arr.length; i &gt; <span class="hljs-number">0</span>; i--)&#123;<br>    <span class="hljs-keyword">const</span> &#123;index&#125; = randomItem(arr, <span class="hljs-number">0</span>, i);<br>    [arr[index], arr[i<span class="hljs-number">-1</span>]] = [arr[i<span class="hljs-number">-1</span>], arr[index]]<br>  &#125;<br>  <span class="hljs-keyword">return</span>  arr.slice(<span class="hljs-number">0</span>, n)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">randomItem</span>(<span class="hljs-params">arr, from = <span class="hljs-number">0</span>, to = arr.length</span>)</span>&#123;<br>  <span class="hljs-keyword">const</span> index = random(<span class="hljs-keyword">from</span>, to)<br>  <span class="hljs-keyword">return</span> &#123;<br>    index,<br>    value: arr[index]<br>  &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">random</span>(<span class="hljs-params">m, n</span>)</span>&#123;<br>  <span class="hljs-keyword">return</span> m + <span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random() * n)<br>&#125;<br></code></pre></td></tr></table></figure>
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
 
 
     </footer>
