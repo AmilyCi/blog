@@ -285,14 +285,14 @@ const promise = new Mypromise((resolve, reject) => {
   },1000)
 })
 promise.then(res => {
-  cosnole.log(res)
-})
+  console.log(res)
+}, err => {})
 ```
 嗯？纳尼，怎么什么都没有输出呀，不是应该在1s之后输出 success 么，和我们想的不一样，好吧，让我们来康康我们实现的代码，分析一下。。。。
 
 我们发现，在我们执行 then 方法时，此时的状态还是 pending，因为在我们创建实例的时候写了一个异步的方法，所以在没有执行这个方法前，状态都不会改变，一直是pending，而我们实现的 then 方法并没有判断状态为 pending 时的处理逻辑，所以什么都不会打印出来。
 
-那我们整理一下思路，这是我们可能需要一个订阅者模式，在状态改变时，我们再判断执行哪个回调。
+那我们整理一下思路，这时我们可能需要一个订阅者模式，在状态改变时，我们再判断执行哪个回调。
 ```js
 const PENDING = 'pending'
 const RESOLVE = 'resolve'
@@ -303,22 +303,22 @@ class Mypromise {
   reason = undefined
   onResolvedArr = []
   onRejectedArr = []
-  constructor(excutor){
+  constructor(excution){
     const resolve = (result) => {
       if(this.status === PENDING){
         this.status = RESOLVE
         this.result = result
         this.onResolvedArr.map(fn => fn())
-        this.onRejectedArr.map(fn => fn())
       }
     }
     const reject = (reason) => {
-      if(this.status === REJECT){
+      if(this.status === PENDING){
         this.status = REJECT
         this.reason = reason
+        this.onRejectedArr.map(fn => fn())
       }
     }
-    excutor(resolve, reject)
+    excution(resolve, reject)
   }
   then(onResolved, onRejected){
     if(this.status === RESOLVE){
@@ -342,3 +342,374 @@ class Mypromise {
   }
 }
 ```
+我们增加两个数组 onResolved 和 onRejected ，在then方法中判断状态为 pending 时（为 pending 代表方法内是异步的），将事件分别添加到这两个数组中，等待状态改变时执行
+```js
+const promise = new Mypromise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('success')
+  },1000)
+})
+promise.then(res => {
+  console.log(res)
+}, err => {})
+
+// 过了1s后  success
+```
+官方的版本最大的优势就是在于 .then 的链式调用，就像这样
+```js
+const promise = new Promise((resolve, reject) => {
+  resolve('success')
+})
+promise.then(res => {
+  console.log(res)
+  return '11111'
+}).then(res => {
+  console.log(res)
+})
+
+// success   11111
+```
+然鹅~~我们并不支持，因为我们的 then 方法是没有返回值的，返回是 undefined，所以我们可以让 then 返回一个 Mypromise 对象，这样我们就可以继续调用 then 方法了，我们看一下 then 方法的改写
+```js
+then(onResolved, onRejected){
+  const newPromise = new Mypromise((resolve, reject) => {
+    if(this.status === RESOLVE){
+      setTimeout(() => {
+        onResolved(this.result)
+      }, 0)
+    }
+    if(this.status === REJECT){
+      setTimeout(() => {
+        onRejected(this.reason)
+      }, 0)
+    }
+    if(this.status === PENDING){
+      this.onResolvedArr.push(() => {
+        onResolved(this.result)
+      })
+      this.onRejectedArr.push(() => {
+        onRejected(this.reason)
+      })
+    }
+  })
+  return newPromise
+}
+```
+这样我们虽然在写 .then 的链式调用不会报错了，但是，resolve 和 reject 一直都没有执行，我们需要一个函数来解决这个问题。
+```js
+const PENDING = 'pending'
+const RESOLVE = 'resolve'
+const REJECT = 'reject'
+const handlePromise = (result, newPromise, resolve, reject) => {
+  if(result === newPromise){
+    throw new Error('can not return oneself')
+  }
+  if((typeof result === 'object' && result !== null) || typeof result === 'function'){
+    const then  = result.then
+    if(typeof then === 'function'){
+      then.call(
+        result,
+        r => {
+          handlePromise(r, newPromise, resolve, reject)
+        },
+        e => {
+          reject(e)
+        })
+    }else{
+      resolve(then)
+    }
+  }else{
+    resolve(result)
+  }
+}
+class Mypromise {
+  status = PENDING
+  result = undefined
+  reason = undefined
+  onResolvedArr = []
+  onRejectedArr = []
+  constructor(excution){
+    const resolve = (result) => {
+      if(this.status === PENDING){
+        this.status = RESOLVE
+        this.result = result
+        this.onResolvedArr.map(fn => fn())
+      }
+    }
+    const reject = (reason) => {
+      if(this.status === PENDING){
+        this.status = REJECT
+        this.reason = reason
+        this.onRejectedArr.map(fn => fn())
+      }
+    }
+    excution(resolve, reject)
+  }
+  then(onResolved, onRejected){
+    const newPromise = new Mypromise((resolve, reject) => {
+      if(this.status === RESOLVE){
+        setTimeout(() => {
+          const result = onResolved(this.result)
+          handlePromise(result, newPromise, resolve, reject)
+        }, 0)
+      }
+      if(this.status === REJECT){
+        setTimeout(() => {
+          const result = onRejected(this.reason)
+          handlePromise(result, newPromise, resolve, reject)
+        }, 0)
+      }
+      if(this.status === PENDING){
+        this.onResolvedArr.push(() => {
+          const result = onResolved(this.result)
+          handlePromise(result, newPromise, resolve, reject)
+        })
+        this.onRejectedArr.push(() => {
+          const result = onRejected(this.reason)
+          handlePromise(result, newPromise, resolve, reject)
+        })
+      }
+    }
+    return newPromise
+  }
+}
+```
+- 我们先用一个常量 result 来接收第一次调用 then 的返回值
+
+- 定义一个方法 handlePromise，给这个方法传入 result newPromise resolve reject
+
+- 在方法中我们判断一下 result 和 newPromise 是否相等，在原生的 Promise 中是不可以将自身返回的，这样没有什么意义，所以我们判断两者若相等，就会报错
+
+- 继续判断一下这个 result 是否为一个 promise 类型的值，也就是是否为一个对象或者函数
+
+- 如果上一步判断为 true，那么我们继续判断是否有 then 这个方法；如果上一步判断为false，说明这个 result 是一个常量，那我们就直接执行 ```resolve(result)```，并将参数传进去。(处理假如 result 为 {then: '123'} )
+
+- 当我们确定 result 是一个 promise 时，我们就继续回调 handlePromise，直到它是一个确切的值，而不是 promise。
+
+到目前为止，我们的 promise 经完成大部分了，还需处理异常情况，我们用 try...catch... 来捕获各个阶段的错误
+
+```js
+const PENDING = 'pending'
+const RESOLVE = 'resolve'
+const REJECT = 'reject'
+const handlePromise = (result, newPromise, resolve, reject) => {
+  if(result === newPromise){
+    throw new Error('can not return oneself')
+  }
+  if((typeof result === 'object' && result !== null) || typeof result === 'function'){
+    let lock = false
+    try{
+      const then  = result.then
+      if(typeof then === 'function'){
+        then.call(
+          result,
+          r => {
+            if (lock) return
+            handlePromise(r, newPromise, resolve, reject)
+            lock = true
+          },
+          e => {
+            if (lock) return
+            reject(e)
+            lock = true
+          })
+      }else{
+        resolve(then)
+      }
+    }catch(error){
+      reject(error)
+    }
+  }else{
+    resolve(result)
+  }
+}
+class Mypromise {
+  status = PENDING
+  result = undefined
+  reason = undefined
+  onResolvedArr = []
+  onRejectedArr = []
+  constructor(excution){
+    const resolve = (result) => {
+      if(this.status === PENDING){
+        this.status = RESOLVE
+        this.result = result
+        this.onResolvedArr.map(fn => fn())
+      }
+    }
+    const reject = (reason) => {
+      if(this.status === PENDING){
+        this.status = REJECT
+        this.reason = reason
+        this.onRejectedArr.map(fn => fn())
+      }
+    }
+    try{
+      excution(resolve, reject)
+    }catch(error){
+      reject(error)
+    }
+  }
+  then(onResolved, onRejected){
+    const newPromise = new Mypromise((resolve, reject) => {
+      if(this.status === RESOLVE){
+        setTimeout(() => {
+          try{
+            const result = onResolved(this.result)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        }, 0)
+      }
+      if(this.status === REJECT){
+        setTimeout(() => {
+          try{
+            const result = onRejected(this.reason)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }  
+        }, 0)
+      }
+      if(this.status === PENDING){
+        this.onResolvedArr.push(() => {
+          try{
+            const result = onResolved(this.result)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        })
+        this.onRejectedArr.push(() => {
+          try{
+            const result = onRejected(this.reason)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        })
+      }
+    }
+    return newPromise
+  }
+}
+```
+之后我们再实现一个catch方法
+```js
+const PENDING = 'pending'
+const RESOLVE = 'resolve'
+const REJECT = 'reject'
+const handlePromise = (result, newPromise, resolve, reject) => {
+  if(result === newPromise){
+    throw new Error('can not return oneself')
+  }
+  if((typeof result === 'object' && result !== null) || typeof result === 'function'){
+    let lock = false
+    try{
+      const then  = result.then
+      if(typeof then === 'function'){
+        then.call(
+          result,
+          r => {
+            if (lock) return
+            handlePromise(r, newPromise, resolve, reject)
+            lock = true
+          },
+          e => {
+            if (lock) return
+            reject(e)
+            lock = true
+          })
+      }else{
+        resolve(then)
+      }
+    }catch(error){
+      reject(error)
+    }
+  }else{
+    resolve(result)
+  }
+}
+class Mypromise {
+  status = PENDING
+  result = undefined
+  reason = undefined
+  onResolvedArr = []
+  onRejectedArr = []
+  constructor(excution){
+    const resolve = (result) => {
+      if(this.status === PENDING){
+        this.status = RESOLVE
+        this.result = result
+        this.onResolvedArr.map(fn => fn())
+      }
+    }
+    const reject = (reason) => {
+      if(this.status === PENDING){
+        this.status = REJECT
+        this.reason = reason
+        this.onRejectedArr.map(fn => fn())
+      }
+    }
+    try{
+      excution(resolve, reject)
+    }catch(error){
+      reject(error)
+    }
+  }
+  then(onResolved, onRejected){
+    onResolved = typeof onResolved === 'function'? onResolved : data => data
+    onRejected = typeof onRejected === 'function'? onRejected : err => throw new Error(err)
+    const newPromise = new Mypromise((resolve, reject) => {
+      if(this.status === RESOLVE){
+        setTimeout(() => {
+          try{
+            const result = onResolved(this.result)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        }, 0)
+      }
+      if(this.status === REJECT){
+        setTimeout(() => {
+          try{
+            const result = onRejected(this.reason)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }  
+        }, 0)
+      }
+      if(this.status === PENDING){
+        this.onResolvedArr.push(() => {
+          try{
+            const result = onResolved(this.result)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        })
+        this.onRejectedArr.push(() => {
+          try{
+            const result = onRejected(this.reason)
+            handlePromise(result, newPromise, resolve, reject)
+          }catch(error){
+            reject(error)
+          }
+        })
+      }
+    }
+    return newPromise
+  }
+  catch(onRejected){
+    return this.then(undefined, onRejected)
+  }
+}
+```
+catch 方法我们可以基于 then 方法来实现，第一个参数传 Undefined，但是这时我们还要在 then 方法中处理一下传参不是函数的情况
+
+### 总结
+
+到目前为止，我们的代码就全部实现了，是不是很简单呢。
