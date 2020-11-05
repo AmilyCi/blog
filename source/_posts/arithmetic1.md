@@ -236,3 +236,25 @@ function random(m, n){
   return m + Math.floor(Math.random() * n)
 }
 ```
+### 9、给出一个32位有符号的整数，你需要将这个整数中每位上的数字进行反转。如：123，输出321；-130，输出：-31；数值范围为[−2 31,  2 31 − 1]
+
+```js
+function reverse(x){
+  let str = x + ''
+  let result = ''
+  if(x > 0){
+    for(let i = str.length - 1; i >= 0; i--){
+      result += str[i]
+    }
+  }else{
+    for(let i = str.length -1; i > 0; i--){
+      result += str[i]
+    }
+    result = -result
+  }
+  if(result < Math.pow(-2, 31) || result > Math.pow(2, 31) - 1){
+    return 0
+  }
+  return result
+}
+```
