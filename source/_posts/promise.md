@@ -88,7 +88,7 @@ ajax(url)
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;当然，有追求的我们怎能单单的仅限于如何使用的层面呢🙄，接下来我们就要大展身手实现一个盗版的 Promise😏。
 ```js
 const promise = new Promise((resolve, reject) => {
-  reolve('success')
+  resolve('success')
 })
 promise.then((res)=>{
   console.log(res)
@@ -136,13 +136,13 @@ class Mypromise{
   result = undefined
   reason = undefined
   constructor(excution){
-    const resolve = function(result){
+    const resolve = (result) => {
       if(this.status = PENDING){
         this.status = RESOLVE
         this.result = result
       }
     }
-    const reject = function(reason){
+    const reject = (reason) => {
       if(this.status = PENDING){
         this.status = REJECT
         this.reason = reason
@@ -154,7 +154,7 @@ class Mypromise{
 ```
 在这一步我们还顺便把 成功 和 失败 的回调函数传参给实现了，相当于```result('success')```。因为 Promise 只有在状态为 pending 时才会改变状态，执行 resolve 和 reject 回调时我们的状态会改变，并且将参数存起来。
 
-之后我们就要开始实现 then 函数啦。
+之后我们就要开始实现 then 函数啦，接收两个函数数据类型的参数，判断状态不为 pending 时，分别执行对应的函数。
 ```js
 const PENDING = 'pending'
 const RESOLVE = 'resolve'
@@ -199,9 +199,9 @@ promise.then(res => {
 
 // success
 ```
-没问题，到现在为止，我么已经实现了一个基本的 promise 啦，哈哈哈，激动不😎，来，我们继续发现问题，解决问题。
+没问题，到目前为止，我么已经实现了一个基本的 promise 啦，哈哈哈，激动不😎，来，我们继续发现问题，解决问题。
 
-我们看一下这个例子
+看一下这个例子
 ```js
 const promise = new Promise((resolve, reject) => {
   resolve('success')
@@ -222,7 +222,7 @@ promise.then(res => {
 console.log('end')
 // success end
 ```
-细心的同学会发现，我们盗版 promise 得到结果的顺序和正版的结果顺序不太一样诶，让我们来分析一下。
+细心的同学会发现，我们盗版 Mypromise 得到结果的顺序和正版的结果顺序不太一样诶，让我们来分析一下。
 
 看过文档的同学应该已经知道了，因为then方法是异步执行的，而我们现在实现的是同步的，所以会从上到下正常输出，那么我们来解决这个问题吧。
 
@@ -342,7 +342,7 @@ class Mypromise {
   }
 }
 ```
-我们增加两个数组 onResolved 和 onRejected ，在then方法中判断状态为 pending 时（为 pending 代表方法内是异步的），将事件分别添加到这两个数组中，等待状态改变时执行
+我们增加两个数组 onResolved 和 onRejected ，在then方法中判断状态为 pending 时（为 pending 代表构造函数方法内是异步的），将事件分别添加到这两个数组中，等待状态改变时执行
 ```js
 const promise = new Mypromise((resolve, reject) => {
   setTimeout(() => {
@@ -401,25 +401,25 @@ const PENDING = 'pending'
 const RESOLVE = 'resolve'
 const REJECT = 'reject'
 const handlePromise = (result, newPromise, resolve, reject) => {
-  if(result === newPromise){
+  if(result === newPromise){ // 如果直接将 then 的返回值返回没有任何意义
     throw new Error('can not return oneself')
   }
-  if((typeof result === 'object' && result !== null) || typeof result === 'function'){
-    const then  = result.then
-    if(typeof then === 'function'){
-      then.call(
+  if((typeof result === 'object' && result !== null) || typeof result === 'function'){ // 判断是否为一个promise构造函数，或者其实例
+    const then  = result.then // 是否具有 then 方法
+    if(typeof then === 'function'){ // 确定是一个 promise 类型的值
+      then.call( // 执行这个then方法，并传参
         result,
         r => {
-          handlePromise(r, newPromise, resolve, reject)
+          handlePromise(r, newPromise, resolve, reject) // 直到不是一个promise的值
         },
         e => {
-          reject(e)
+          reject(e) // 失败直接reject就可以了
         })
     }else{
-      resolve(then)
+      resolve(then) // 没有 then 方法，那就不会用链式调用，直接作为参数即可
     }
   }else{
-    resolve(result)
+    resolve(result) // 是一个类似 '123' 这样的常量，直接作为参数即可
   }
 }
 class Mypromise {
@@ -449,24 +449,24 @@ class Mypromise {
     const newPromise = new Mypromise((resolve, reject) => {
       if(this.status === RESOLVE){
         setTimeout(() => {
-          const result = onResolved(this.result)
-          handlePromise(result, newPromise, resolve, reject)
+          const result = onResolved(this.result) // result 接收执行后的结果
+          handlePromise(result, newPromise, resolve, reject) // 执行这个方法，将结果，和调用then返回的promise对象，成功函数以及失败函数作为参数传进去。
         }, 0)
       }
       if(this.status === REJECT){
         setTimeout(() => {
-          const result = onRejected(this.reason)
-          handlePromise(result, newPromise, resolve, reject)
+          const result = onRejected(this.reason) // 同理
+          handlePromise(result, newPromise, resolve, reject) // 同理
         }, 0)
       }
       if(this.status === PENDING){
         this.onResolvedArr.push(() => {
-          const result = onResolved(this.result)
-          handlePromise(result, newPromise, resolve, reject)
+          const result = onResolved(this.result) // 同理
+          handlePromise(result, newPromise, resolve, reject) // 同理
         })
         this.onRejectedArr.push(() => {
-          const result = onRejected(this.reason)
-          handlePromise(result, newPromise, resolve, reject)
+          const result = onRejected(this.reason) // 同理
+          handlePromise(result, newPromise, resolve, reject) // 同理
         })
       }
     }
@@ -660,7 +660,9 @@ class Mypromise {
   }
   then(onResolved, onRejected){
     onResolved = typeof onResolved === 'function'? onResolved : data => data
-    onRejected = typeof onRejected === 'function'? onRejected : err => throw new Error(err)
+    onRejected = typeof onRejected === 'function'? onRejected : err => {
+      throw new Error(err)
+    }
     const newPromise = new Mypromise((resolve, reject) => {
       if(this.status === RESOLVE){
         setTimeout(() => {
@@ -700,7 +702,7 @@ class Mypromise {
           }
         })
       }
-    }
+    })
     return newPromise
   }
   catch(onRejected){
@@ -710,6 +712,25 @@ class Mypromise {
 ```
 catch 方法我们可以基于 then 方法来实现，第一个参数传 Undefined，但是这时我们还要在 then 方法中处理一下传参不是函数的情况
 
+现在让我们来测试一下
+```js
+const promise = new Mypromise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('啦啦啦')
+  }, 1000)
+})
+promise.then(res => {
+  console.log(res)
+  return '1111'
+}, err => {}).then(res => {
+  console.log(res)
+}, err => {})
+console.log(1234)
+
+// 1234   "啦啦啦"     "1111"
+```
+木有问题
+
 ### 总结
 
-到目前为止，我们的代码就全部实现了，是不是很简单呢。
+到目前为止，我们的代码就全部实现了，虽然代码量有点多，但是只要我们一步一步分析，其实也不是很难。
