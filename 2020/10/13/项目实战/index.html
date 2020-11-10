@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    项目实战 |  前端小白菜
+    通过权限码来控制动态路由 |  前端小白菜
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -46,7 +46,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  项目实战
+  通过权限码来控制动态路由
 </h1>
  
 
@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">243</span>
+            <span class="post-count">475</span>
         </span>
     </span>
 
@@ -104,10 +104,27 @@
       
 
       
-      <h3 id="通过权限码来控制动态路由"><a href="#通过权限码来控制动态路由" class="headerlink" title="通过权限码来控制动态路由"></a>通过权限码来控制动态路由</h3><ul>
-<li><p>项目背景：这是一个通过用户登录来获取用户权限路由的一个后台管理系统。它是建立在一个总得后台管理系统下的一个Tab项，需要登录总的后台管理系统之后通过界面上每个后台管理入口来进入我们的这个金币管理系统。每个人登录权限不同，能够看到的页面也就不同。</p>
+      <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;之前有做过这样一个后台管理的需求，要求不同身份的用户登录我们的后台管理系统会显示不同的功能菜单、路由页面、按钮等。其实就是要在前端做一个权限路由。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;我们可以做一个动态路由，获取用户信息之后来渲染路由数据，查阅vue-router文档，发现 <a href="https://router.vuejs.org/zh/api/#router-addroutes" target="_blank" rel="noopener">router.addRoutes</a>这个API可以支持我们来实现一个动态的路由。接下来就是各种的逻辑通过用户的权限码来匹配不同的路由啦。</p>
+<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
+<li><p>先和后端定义好每一个code码所对应的权限名称还有页面。（比如说，code：user_manage，代表 用户管理 这个菜单，所以用户管理菜单的权限码就是user_manage）</p>
 </li>
-<li><p>项目思路：在我们登录总的后台管理系统成功之后，会在cookie中存储 userId、 token , 在金币管理系统的 app.vue 中来获取这两个参数，如果没有则让页面跳转到总得后台管理系统登录页，引导用户登录，如果获取到就会调接口拿到该用户下所有权限码。之后我们调用vuex中的方法 generateRoutes ，该方法会调用一个</p>
+<li><p>在前端先定义好一个权限码静态路由配置项，这个配置项里标识了每个code码对应的菜单名和页面组件等信息</p>
+<img src="/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/route.png" class="">
+<p>我们定义好的这个路由配置项的结构符合 routes 选项要求的数组，最后只要将这个数组作为 router.addRoutes 的参数传进去即可。</p>
+</li>
+<li><p>接下来，在用户登录的时候我们就获取这个用户下的所有权限code码数组。</p>
+<img src="/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/app.png" class="">
+<p>获取权限码之后我们要进行一些处理，通过这个权限码数组来生成对应的路由项</p>
+<img src="/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/vuex.png" class="">
+</li>
+<li><p>根据这个权限码数组以及我们定义好的权限码静态路由配置项，遍历生成该用户所能访问的路由数据。</p>
+<img src="/blog/2020/10/13/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/filter.png" class="">
+<p>具体的代码处理逻辑可以看上图</p>
+</li>
+<li><p>最后就是调用 vue-router 的 addRoutes 动态创建真实路由</p>
+</li>
+<li><p>我们的菜单栏也是通过遍历这个路由来创建的</p>
 </li>
 </ul>
 
