@@ -294,3 +294,17 @@ function quickSort(arr){
   return quickSort(left).concat([pivot], quickSort(right))
 }
 ```
+
+### 12、找出数组中两项之和为 target 的下标
+
+```js
+function twoSum(nums, target){
+  const comp = {}
+  for(let i = 0; i < nums.length; i++){
+    if(comp[target - nums[i]] >= 0){
+      return [comp[target - nums[i]], i]
+    }
+    comp[nums[i]] = i
+  }
+}
+```
